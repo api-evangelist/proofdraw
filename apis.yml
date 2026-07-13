@@ -1,0 +1,54 @@
+name: ProofDraw
+description: >-
+  Provably-fair random selection REST API that seals entry lists with SHA-256 commitments bound to future drand (League
+  of Entropy) randomness rounds, producing publicly verifiable draw receipts with client-side open-source verification.
+url: https://proofdraw.apievangelist.com/apis.yml
+created: '2026-07-13'
+modified: '2026-07-13'
+specificationVersion: '0.21'
+tags:
+  - randomness
+  - provably-fair
+  - drand
+  - verifiable-randomness
+  - cryptography
+  - raffle
+  - giveaway
+  - sweepstakes
+  - lottery
+  - verification
+  - webhooks
+  - rest-api
+apis:
+  - name: ProofDraw API
+    description: >-
+      Provably-fair random selection REST API (v1) covering draw lifecycle, account, health, and public verification
+      artifacts. HMAC-signed webhooks. Bearer API-key auth.
+    humanURL: https://proofdraw.com/api
+    baseURL: https://proofdraw.com/api/v1
+    tags:
+      - randomness
+      - provably-fair
+      - drand
+      - verifiable-randomness
+      - cryptography
+      - raffle
+      - giveaway
+      - sweepstakes
+      - lottery
+      - verification
+      - webhooks
+      - rest-api
+    properties:
+      - type: OpenAPI
+        url: https://proofdraw.com/openapi.json
+      - type: Documentation
+        url: https://proofdraw.com/api
+maintainers:
+  - FN: ProofDraw
+    url: https://proofdraw.com/
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 95
+  at: '2026-07-13T18:06:16.367Z'
