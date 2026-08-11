@@ -1,0 +1,78 @@
+generated: '2026-08-11'
+method: searched
+source: https://proofdraw.com/api
+test_live_separation:
+  mechanism: key prefix
+  prefixes:
+    - value: pd_live_
+      mode: live
+      note: Issued by POST /v1/auth/register and by POST /v1/auth/login on a live account.
+    - value: pd_test_
+      mode: sandbox
+      note: >-
+        Documented in the bearerAuth security scheme ("or `pd_test_…` for sandbox keys") and shown in the
+        POST /v1/auth/login example response, where the account carries `"tier": "sandbox"`.
+  same_base_url: true
+  note: >-
+    Mode is carried entirely by the key — there is no separate sandbox host and no test/live toggle
+    parameter. https://proofdraw.com/api/v1 serves both.
+gaps:
+  - id: no-self-serve-test-key
+    detail: >-
+      The docs never say how a developer OBTAINS a pd_test_ key. Registration mints pd_live_; there is no
+      documented sandbox signup, no test-mode switch on the account, and no endpoint that issues a test
+      key. The sandbox tier is visible in the reference examples but not reachable from the documentation.
+  - id: no-sandbox-behavior-contract
+    detail: >-
+      What a pd_test_ key actually changes is undocumented — whether a sandbox draw calls the real drand
+      beacon, whether it pushes to the public github.com/proofdraw/draw-lists mirror, whether it consumes
+      tier quota, and whether it produces a real public /v/{id} receipt are all unstated.
+  - id: no-fixtures
+    detail: No test fixtures, magic entry values, trigger tooling, or time/clock simulation are published.
+playground:
+  url: https://proofdraw.com/demo
+  auth_required: false
+  status: 200
+  description: >-
+    A live in-page draw demo: paste any list of names or IDs, pick a simulated draw time, and watch the
+    five verification steps run (collect and index entries, SHA-256 the list, fetch the drand round,
+    compute mod N, verify the winner). Labelled in the UI as "DEMO MODE · No real drand call · Same
+    algorithm" — it exercises the real selection algorithm client-side but does not call the beacon, does
+    not seal, and produces no public receipt.
+verifier:
+  url: https://proofdraw.com/verifier.html
+  status: 200
+  auth_required: false
+  source_code: https://github.com/proofdraw/verifier
+  license: MIT
+  description: >-
+    Standalone in-browser verifier. Fetches a sealed list from /list/{hash}, recomputes SHA-256 over the
+    response bytes with Web Crypto, compares it to the hash in the URL, reads the chain and round from the
+    file header, and re-derives winner_row = drand_value mod entry_count. Runs entirely client-side, so any
+    third party can check a draw without a ProofDraw account and without trusting ProofDraw's backend.
+public_test_surfaces:
+  - url: https://proofdraw.com/api/health
+    auth_required: false
+    status: 200
+    description: 'Liveness probe. Returns { "status": "ok", "time": "…" }.'
+  - path: GET /list/{hash}
+    auth_required: false
+    description: >-
+      Content-addressed sealed list bytes; the canonical thing to hash when testing a verification
+      integration. Cache-Control public, max-age=31536000, immutable.
+  - path: GET /list/{hash}/ots
+    auth_required: false
+    description: >-
+      OpenTimestamps proof for the same hash, verifiable with the standard `ots verify` CLI. May 404 until
+      a background retry completes — OTS submission is best-effort at seal time.
+  - url: https://github.com/proofdraw/draw-lists
+    auth_required: false
+    description: >-
+      Public append-only mirror of every sealed entry list, content-addressed by SHA-256 — a real corpus of
+      production artifacts to test a verifier against without holding an account.
+test_values_published: []
+note: >-
+  No test cards, magic identifiers, or seeded fixtures exist — the domain has none to invent. The
+  meaningful sandbox story here is the reverse of a payments API: the VERIFICATION side is fully open and
+  needs no credentials at all, while the WRITE side has a documented test-key prefix with no documented way
+  to get one.

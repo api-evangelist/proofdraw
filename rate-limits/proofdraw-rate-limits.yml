@@ -1,0 +1,50 @@
+generated: '2026-08-11'
+method: searched
+source: https://proofdraw.com/openapi.json
+docs: https://proofdraw.com/api
+limit_count: 0
+note: >-
+  ProofDraw publishes a rate-limit SIGNAL but no rate-limit NUMBERS. The OpenAPI info.description states:
+  "Rate limits: per API key. `X-RateLimit-Limit` and `X-RateLimit-Remaining` headers are returned on every
+  response." No quota value, window, burst allowance, per-endpoint variation, or exhaustion status code is
+  published anywhere on the public surface. The docs defer the detail to docs/api-spec.md, which 404s.
+  An agent can read remaining budget at runtime but cannot plan against a documented ceiling.
+headers:
+  - name: X-RateLimit-Limit
+    documented: true
+    observed: false
+  - name: X-RateLimit-Remaining
+    documented: true
+    observed: false
+  - name: X-RateLimit-Reset
+    documented: false
+    observed: false
+  - name: Retry-After
+    documented: false
+    observed: false
+exhaustion:
+  status_code: null
+  error_code: rate_limited
+  note: >-
+    `rate_limited` appears in the Error `code` enum of the published OpenAPI, but no operation declares a
+    429 (or any) response for it. The status an agent should branch on is genuinely undocumented.
+limits: []
+probe:
+  - url: https://proofdraw.com/api/health
+    status: 200
+    date: '2026-08-11'
+    rate_limit_headers_present: false
+    observed_headers:
+      - date
+      - content-type
+      - cache-control
+      - access-control-allow-origin
+      - cf-cache-status
+    note: >-
+      The one unauthenticated JSON endpoint returns NO X-RateLimit-* headers, contradicting "returned on
+      every response". The headers are most likely emitted only on authenticated (per-key) requests, which
+      cannot be verified without credentials — but as published, the claim is not observable anonymously.
+tier_quotas:
+  note: >-
+    Plan caps are a separate mechanism from rate limiting and are enforced as 403 tier_limit_exceeded /
+    422 entry_limit_exceeded rather than as throttling. See plans/proofdraw-plans-pricing.yml.

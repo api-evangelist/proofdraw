@@ -1,0 +1,150 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the ProofDraw API
+  version: 1.0.0
+  x-generated: '2026-08-11'
+  x-method: generated
+  x-source: openapi/proofdraw-api-openapi.yml
+  x-note: >-
+    Non-destructive enhancement layer over ProofDraw's published OpenAPI 3.0.3. The upstream spec declares
+    ZERO operationIds across all 16 operations, which makes every downstream artifact (SDK generation, MCP
+    tool binding, Arazzo workflows, agent skills) fall back to method+path. This overlay assigns stable
+    operationIds and records the runtime semantics that live only in prose on https://proofdraw.com/api.
+    Everything added here is attributed to API Evangelist via x-apievangelist-* extensions — it is NOT a
+    ProofDraw claim, and the original spec is never mutated.
+extends: openapi/proofdraw-api-openapi.yml
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-profile: https://apievangelist.com/providers/proofdraw
+      x-apievangelist-enriched: '2026-08-11'
+      x-apievangelist-gaps:
+        - no-operationids
+        - no-rfc9457-errors
+        - no-429-response-declared
+        - no-idempotency-key
+        - no-pagination-on-list-draws
+        - verification-page-missing-from-spec
+
+  # --- operationIds (upstream declares none) ---
+  - target: $.paths['/health'].get
+    update:
+      operationId: getHealth
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/auth/login'].post
+    update:
+      operationId: login
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/auth/register'].post
+    update:
+      operationId: register
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/me'].get
+    update:
+      operationId: getAccount
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/me'].patch
+    update:
+      operationId: updateAccount
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/me/profile'].put
+    update:
+      operationId: replaceProfile
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/draws'].get
+    update:
+      operationId: listDraws
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/draws'].post
+    update:
+      operationId: createDraw
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/draws/instant'].post
+    update:
+      operationId: createInstantDraw
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/draws/{id}'].get
+    update:
+      operationId: getDraw
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/draws/{id}'].delete
+    update:
+      operationId: cancelDraw
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/draws/{id}/entries'].post
+    update:
+      operationId: addDrawEntries
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/draws/{id}/seal'].post
+    update:
+      operationId: sealDraw
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/v1/draws/{id}/resolve'].post
+    update:
+      operationId: resolveDraw
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/list/{hash}'].get
+    update:
+      operationId: getSealedList
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+  - target: $.paths['/list/{hash}/ots'].get
+    update:
+      operationId: getOtsProof
+      x-apievangelist-operationid-source: assigned-by-api-evangelist
+
+  # --- runtime semantics documented only in prose upstream ---
+  - target: $.paths['/v1/draws/{id}/resolve'].post
+    update:
+      x-idempotent: true
+      x-apievangelist-note: >-
+        Documented as a no-op on an already-resolved draw — the drand round and the modulo computation are
+        both deterministic, so re-resolving cannot change the winner.
+  - target: $.paths['/v1/draws/instant'].post
+    update:
+      x-idempotent: false
+      x-apievangelist-consequence: irreversible
+      x-apievangelist-note: >-
+        No idempotency key exists. The synchronous wait is capped at 60s by design, so this call can time
+        out having SUCCEEDED. A blind retry creates a second permanent public draw and consumes a second
+        unit of quota (5 draws lifetime on the free tier). Recover by polling GET /v1/draws/{id} or by
+        taking the draw.resolved webhook — never by re-POSTing.
+  - target: $.paths['/v1/draws/{id}/seal'].post
+    update:
+      x-idempotent: false
+      x-apievangelist-consequence: irreversible
+      x-apievangelist-note: >-
+        Retry-safe ONLY after a 500 seal_failed, where the draw remains open; retry with a larger
+        round_offset_seconds. A second call on a sealed draw returns 409 state_conflict.
+  - target: $.paths['/v1/draws'].get
+    update:
+      x-apievangelist-pagination: none
+      x-apievangelist-note: >-
+        Returns at most the 100 most recent draws and silently truncates beyond that — the response carries
+        no total, no cursor, and no truncation flag. Persist draw ids client-side.
+  - target: $.paths['/v1/draws/{id}'].delete
+    update:
+      x-apievangelist-note: >-
+        Only valid while state == open. Once sealed the draw is a permanent public commitment and this
+        returns 409 state_conflict — by design.
+  - target: $.paths['/list/{hash}'].get
+    update:
+      x-apievangelist-cache: 'public, max-age=31536000, immutable'
+      x-apievangelist-note: >-
+        Content-addressed: re-hashing the response bytes and comparing to the {hash} path component is
+        itself the verification check. Errors on this path are PLAIN TEXT, not the JSON envelope.
+  - target: $.paths['/list/{hash}/ots'].get
+    update:
+      x-apievangelist-note: >-
+        OpenTimestamps attestation is best-effort at seal time, so a 404 here can mean "not yet" rather
+        than "never" — a background retry may land it later. Errors are plain text.
+  - target: $.components.schemas.Error
+    update:
+      x-apievangelist-note: >-
+        The `code` enum includes `rate_limited`, but no operation in the spec declares a 429 (or any)
+        response for it, so the status an agent should branch on is undocumented.
+  - target: $.components.securitySchemes.bearerAuth
+    update:
+      x-apievangelist-note: >-
+        Static API key presented as a bearer token. Live keys are prefixed pd_live_, sandbox keys pd_test_.
+        Keys are SHA-256 hashed at rest and returned exactly once; there is no revoke, list, or expiry
+        endpoint, so a leaked key cannot be retired through the API.

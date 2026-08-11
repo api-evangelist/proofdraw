@@ -1,0 +1,61 @@
+generated: '2026-08-11'
+method: searched
+source: https://proofdraw.com/api
+package_count: 0
+official_sdk_count: 0
+note: >-
+  ProofDraw ships no client libraries. The API reference states it plainly: "Official SDKs not yet
+  published — direct HTTP works on any language." Searched npm (`proofdraw`, `@proofdraw/sdk`), PyPI,
+  RubyGems, crates.io and Packagist — every registry returned 404. No SDKs pointer is emitted in
+  apis.yml because there is no first-party client library to point at.
+packages: []
+registries_checked:
+  - registry: npm
+    query: proofdraw
+    url: https://registry.npmjs.org/proofdraw
+    status: 404
+  - registry: npm
+    query: '@proofdraw/sdk'
+    url: https://registry.npmjs.org/@proofdraw%2Fsdk
+    status: 404
+  - registry: pypi
+    query: proofdraw
+    url: https://pypi.org/pypi/proofdraw/json
+    status: 404
+  - registry: rubygems
+    query: proofdraw
+    url: https://rubygems.org/api/v1/gems/proofdraw.json
+    status: 404
+  - registry: crates.io
+    query: proofdraw
+    url: https://crates.io/api/v1/crates/proofdraw
+    status: 404
+  - registry: packagist
+    query: proofdraw/proofdraw
+    url: https://packagist.org/packages/proofdraw/proofdraw.json
+    status: 404
+first_party_source_code:
+  - name: proofdraw/verifier
+    url: https://github.com/proofdraw/verifier
+    description: >-
+      Open-source, single-file in-browser verifier (verifier.html) that re-hashes a sealed entry list and
+      re-derives the winning row from the drand round. MIT licensed. Distributed as a repo and as a hosted
+      page at https://proofdraw.com/verifier.html — not published to any package registry, so there is no
+      version or release date to read.
+    license: MIT
+    registry: null
+    version: null
+    published: null
+    note: >-
+      No tags, no releases, no registry entry. Last push 2026-07-13 (GitHub API). Version is genuinely
+      unrecorded rather than unchecked.
+    official: true
+  - name: proofdraw/draw-lists
+    url: https://github.com/proofdraw/draw-lists
+    description: >-
+      Public append-only mirror of every sealed entry list, content-addressed by SHA-256. Data repository,
+      not a client library.
+    registry: null
+    version: null
+    published: null
+    official: true

@@ -1,0 +1,65 @@
+generated: '2026-08-11'
+method: searched
+source: https://proofdraw.com/api
+spec: openapi/proofdraw-api-openapi.yml
+versioning:
+  scheme: uri-path
+  current: v1
+  spec_version: 1.0.0
+  docs: https://proofdraw.com/api
+  note: >-
+    Version is carried in the path (/api/v1/...). GET /api/health and the public verification reads
+    (/list/{hash}, /list/{hash}/ots) sit outside the version prefix, so the verification surface is not
+    versioned alongside the account API. No version header, no date-pinned version, no version negotiation.
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecated_operations: []
+  note: >-
+    No deprecation or sunset policy is published, and no operation in the OpenAPI carries
+    `deprecated: true`. RFC 8594 Sunset/Deprecation headers are not documented. With v1 being the first
+    and only version, there is nothing deprecated yet — but also no stated commitment about how a v2 would
+    be introduced or how long v1 would run. No `Deprecation` pointer is emitted in apis.yml.
+status_page:
+  url: null
+  note: >-
+    No status page. https://proofdraw.com/status returns 404, no status.proofdraw.com subdomain resolves in
+    the site's own link graph, and the sitemap lists no status URL. The nearest operational signal is the
+    unauthenticated liveness probe GET https://proofdraw.com/api/health (200, `{"status":"ok","time":…}`),
+    which is a probe endpoint rather than an incident-history surface. No `StatusPage` pointer is emitted.
+sla:
+  url: null
+  uptime_target: null
+  note: >-
+    No SLA is published. The Terms of Service (https://proofdraw.com/terms, 200) is the only contractual
+    document on the site.
+changelog:
+  url: null
+  note: >-
+    No dated changelog. https://proofdraw.com/changelog returns 404 and the sitemap lists no changelog or
+    release-notes page. The GitHub account (github.com/proofdraw) carries only the MIT verifier and the
+    append-only draw-lists mirror — neither publishes releases or tags. No `ChangeLog` pointer is emitted.
+durability_commitments:
+  - claim: Sealed draws are permanent and cannot be deleted or modified
+    mechanism: >-
+      DELETE /v1/draws/{id} returns 409 state_conflict once sealed; the list file is pushed to
+      github.com/proofdraw/draw-lists and OpenTimestamps-attested at seal.
+    source: https://proofdraw.com/api
+  - claim: Verification survives ProofDraw going offline
+    mechanism: >-
+      "We designed this so that ProofDraw going offline wouldn't break a single verification" — the sealed
+      lists are mirrored to a public GitHub repo, the randomness comes from the League of Entropy drand
+      chain, and the verifier is MIT-licensed and client-side. Publicly stated design commitment on
+      https://proofdraw.com/about; not an SLA.
+    source: https://proofdraw.com/about
+  - claim: OpenTimestamps proofs upgrade to a Bitcoin anchor within ~24h
+    mechanism: background job `proofdraw:upgrade-ots`; calendar attestation is best-effort at seal time.
+    source: https://proofdraw.com/docs/opentimestamps
+company_stage:
+  founded: 2026
+  headquarters: Michigan, USA
+  note: >-
+    Self-described as early ("We're early. The team is small.") on the careers section. The whole public
+    surface — apis.json, sitemap, OpenAPI, terms — carries a 2026-07-13 last-modified date, and the site
+    root's Last-Modified header agrees, so nothing on the public surface has changed since launch.

@@ -1,0 +1,135 @@
+generated: '2026-08-11'
+method: searched
+source: https://proofdraw.com/api
+spec: openapi/proofdraw-api-openapi.yml
+authentication:
+  style: http-bearer
+  header: 'Authorization: Bearer pd_live_… | pd_test_…'
+  see: authentication/proofdraw-authentication.yml
+response_envelope:
+  shape: custom
+  success: '{ "success": true, "data": { … }, "message": "" }'
+  error: '{ "success": false, "data": null, "message": "…", "code": "…", "errors": { "field": ["…"] } }'
+  machine_readable_code_field: code
+  problem_json: false
+  note: >-
+    Not RFC 9457. Every response — success and failure — is wrapped in the same envelope, and the
+    machine-readable discriminator is the `code` string enumerated in components.schemas.Error.
+    Content type is application/json throughout; application/problem+json is not used.
+  see: errors/proofdraw-problem-types.yml
+identifiers:
+  draw_id:
+    format: Crockford-Base32, uppercase, 4 chars (alphabet 0-9 A-Z minus I L O U)
+    example: K7M2
+    note: Public commitment id; also the path component of the verification page /v/{id}.
+  ticket_id:
+    format: operator-supplied ([A-Za-z0-9_\-\.]+, 1–64 chars) or auto-generated XXXX-XXXX Crockford-Base32
+    note: >-
+      Ticket ids land in the PUBLIC sealed list. The docs explicitly warn against putting PII in them and
+      direct private context to the `metadata` object instead.
+  list_hash:
+    format: 64 lowercase hex chars (SHA-256 of the canonical v2 list bytes)
+  integer_primary_keys_exposed: false
+idempotency:
+  key_header: null
+  supported: partial
+  idempotent_operations:
+    - operation: POST /v1/draws/{id}/resolve
+      basis: >-
+        Documented as idempotent — "Calling /resolve on an already-resolved draw is a no-op — it returns
+        the same winner." The drand round and the modulo computation are both deterministic.
+    - operation: POST /v1/draws/{id}/seal
+      basis: >-
+        Retry-safe after a 500 seal_failed: the draw stays `open` and the docs instruct the caller to call
+        /seal again, typically with a larger round_offset_seconds. Not idempotent once the seal succeeds —
+        a second call returns 409 state_conflict.
+  non_idempotent_operations:
+    - POST /v1/draws
+    - POST /v1/draws/instant
+    - POST /v1/draws/{id}/entries
+  note: >-
+    There is NO idempotency-key mechanism. A retried POST /v1/draws/instant after a timeout creates a
+    second draw and consumes a second unit of the account's draw quota — and on the free tier that quota is
+    a lifetime cap of 5. This is the single highest-value gap for an agent caller: the one operation most
+    likely to be retried (a 60-second synchronous wait that can time out by design) is also the one with no
+    replay protection. No `Idempotency` pointer is emitted in apis.yml, because no idempotency-key contract
+    exists to point at.
+pagination:
+  style: none
+  endpoint: GET /v1/draws
+  behavior: >-
+    Returns up to the 100 most recent draws, newest first. No cursor, no offset, no page-size parameter,
+    and no total count. The docs state that accounts over 100 draws are SILENTLY CAPPED — the response
+    gives the caller no signal that older records were withheld. Cursor pagination is described as
+    "available on request or for enterprise accounts".
+  agent_impact: >-
+    An agent cannot enumerate a full draw history and cannot detect truncation from the response alone.
+    The documented workaround is to persist draw ids client-side.
+field_expansion:
+  supported: false
+  note: >-
+    No expand/fields/include parameters. Field population is state-driven instead — GET /v1/draws/{id}
+    returns different populated fields depending on whether the draw is open, sealed, resolved or cancelled.
+metadata:
+  supported: true
+  scope: [draw, entry]
+  type: free-form JSON object
+  max_size: 4KB
+  sealed: false
+  note: >-
+    Opaque to ProofDraw — stored as-is, returned on every read, never inspected or transformed. Deliberately
+    excluded from the sealed public list file, which carries ticket ids only. This is the documented place
+    to keep email hashes, internal user ids and campaign codes out of the public commitment.
+request_tracing:
+  request_id_header: null
+  note: No request-id / correlation-id header is documented on requests or responses.
+versioning:
+  scheme: uri-path
+  current: v1
+  note: >-
+    Version lives in the path (/api/v1/...). Two endpoints sit OUTSIDE the version prefix — GET /api/health
+    and the public verification reads GET /list/{hash} and /list/{hash}/ots — so the public verification
+    surface is not versioned with the account API.
+  see: lifecycle/proofdraw-lifecycle.yml
+rate_limit_signaling:
+  headers:
+    - X-RateLimit-Limit
+    - X-RateLimit-Remaining
+  documented_in: openapi info.description
+  numeric_limits_published: false
+  see: rate-limits/proofdraw-rate-limits.yml
+batching:
+  endpoint: POST /v1/draws/{id}/entries
+  max_per_call: 5000
+  note: >-
+    Hard per-call ceiling of 5,000 entries; larger lists are built by repeated calls, each committing
+    atomically in a transaction. A separate per-tier cap limits total entries per draw (100 on free tier),
+    readable from GET /v1/me.
+  one_shot: >-
+    POST /v1/draws/instant collapses create + entries + seal (+ optional synchronous resolve) into one
+    atomic call — the recommended path, and the one that saves three round trips.
+long_running_operations:
+  mechanism: synchronous wait flag + webhook fallback
+  wait_flag: 'wait: true on seal/instant blocks until the drand round publishes'
+  hard_cap_seconds: 60
+  note: >-
+    The synchronous wait is capped at 60s (SEAL_SYNC_WAIT_MAX_SECONDS). If round_offset_seconds > 60 the
+    call returns `sealed` rather than `resolved` and the caller must poll GET /v1/draws/{id}, wait for the
+    webhook, or call POST /v1/draws/{id}/resolve. A background cron auto-resolves within ~60s of the round.
+  see: asyncapi/proofdraw-webhooks.yml
+immutability:
+  note: >-
+    Sealing is irreversible by design. After seal the entry list is pushed to github.com/proofdraw/draw-lists
+    and OpenTimestamps-attested; DELETE /v1/draws/{id} then returns 409 state_conflict permanently. Callers
+    must validate entries BEFORE calling /seal or /draws/instant — there is no undo.
+caching:
+  content_addressed_reads: >-
+    GET /list/{hash} and GET /list/{hash}/ots return `Cache-Control: public, max-age=31536000, immutable`
+    plus `X-Content-Type-Options: nosniff` — safe to cache forever because the URL is the hash.
+cross_links:
+  errors: errors/proofdraw-problem-types.yml
+  authentication: authentication/proofdraw-authentication.yml
+  lifecycle: lifecycle/proofdraw-lifecycle.yml
+  rate_limits: rate-limits/proofdraw-rate-limits.yml
+  webhooks: asyncapi/proofdraw-webhooks.yml
+  sandbox: sandbox/proofdraw-sandbox.yml

@@ -1,0 +1,65 @@
+generated: '2026-08-11'
+method: searched
+source: https://proofdraw.com/api
+spec_type: none
+asyncapi_published: false
+note: >-
+  ProofDraw documents a real webhook surface but publishes no AsyncAPI document and no event-payload
+  schemas. The OpenAPI carries no `webhooks:` object either (it is OpenAPI 3.0.3, which predates that
+  keyword). Event payload shapes are deferred to docs/api-spec.md, which returns 404 — so the catalog below
+  is the event NAMES and the delivery/signature contract as published, with payload bodies genuinely
+  unspecified. Nothing here is invented.
+transport: HTTPS POST
+subscription_model:
+  mechanism: per-draw callback_url
+  set_on:
+    - POST /v1/draws
+    - POST /v1/draws/instant
+  field: callback_url
+  constraints: URL, max 500 chars, optional
+  note: >-
+    There is no account-level webhook endpoint, no webhook management API, no endpoint list/update/delete,
+    and no event-subscription filter. Each draw carries its own callback URL, set at create time only.
+security:
+  signature_header: X-ProofDraw-Signature
+  signature_format: 'sha256=<hex>'
+  algorithm: HMAC-SHA256
+  secret_field: callback_secret
+  secret_delivery: >-
+    Returned ONLY on the creating response (POST /v1/draws or POST /v1/draws/instant) when callback_url was
+    supplied. Not retrievable afterwards — subsequent reads of the draw omit it. There is no documented
+    rotation or re-issue path, so losing the secret means losing the ability to verify that draw's
+    deliveries.
+  signed_payload_definition: undocumented
+  timestamp_header: null
+  replay_protection: undocumented
+events:
+  - name: draw.sealed
+    trigger: The entry list has been hashed, committed publicly, and bound to a future drand round.
+    payload_schema: undocumented
+  - name: draw.resolved
+    trigger: >-
+      The drand round published and the winning row was computed. Delivered whether resolution came from a
+      synchronous wait, an explicit POST /v1/draws/{id}/resolve, or the auto-resolver cron.
+    payload_schema: undocumented
+  - name: draw.cancelled
+    trigger: An open draw was cancelled via DELETE /v1/draws/{id}.
+    payload_schema: undocumented
+delivery:
+  latency: >-
+    The auto-resolver cron runs every minute, so a webhook can arrive up to ~60s (≈30s average) after the
+    drand round publishes. Callers needing the result sooner are told to run their own timer and call
+    POST /v1/draws/{id}/resolve.
+  retries: undocumented
+  ordering: undocumented
+  timeouts: undocumented
+why_it_matters: >-
+  The docs make the webhook the durable contract rather than an optional extra: the synchronous `wait: true`
+  path is hard-capped at 60 seconds, so any draw with round_offset_seconds over ~45s WILL return `sealed`
+  rather than `resolved` and the result arrives only by webhook or by polling. For an agent, the webhook is
+  the primary completion signal for scheduled draws.
+gaps:
+  - No AsyncAPI (or OpenAPI 3.1 webhooks) document — event payloads cannot be typed by a consumer.
+  - No published retry policy, delivery timeout, or ordering guarantee.
+  - No replay protection documented (no timestamp header, no nonce) alongside the HMAC signature.
+  - callback_secret cannot be rotated or re-read; no account-level webhook endpoint management.

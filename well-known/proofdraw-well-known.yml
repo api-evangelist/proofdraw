@@ -1,0 +1,41 @@
+generated: '2026-08-11'
+method: probed
+source: live probes of https://proofdraw.com/.well-known/*
+host: https://proofdraw.com
+note: >-
+  Every /.well-known/ path probed returned a Laravel 404 HTML page. proofdraw.com serves no discovery
+  surface at the well-known namespace — no security.txt (RFC 9116), no OIDC/OAuth metadata (the API is
+  bearer API-key only, so OAuth metadata is correctly absent), no api-catalog (RFC 9727), no ai-plugin.
+  This file records a verified ABSENCE. No WellKnown or SecurityTxt pointer is emitted in apis.yml,
+  because no path returned a real document.
+documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+related:
+  - path: /apis.json
+    status: 200
+    note: >-
+      ProofDraw does publish a first-party APIs.json 0.16 index at the site root (not under /.well-known/),
+      pointing at https://proofdraw.com/openapi.json, the docs, and the terms of service.
+  - path: /robots.txt
+    status: 200
+    note: >-
+      Cloudflare-managed robots.txt carrying Content-Signal `search=yes,ai-train=no,use=reference` and
+      explicit Disallow for ClaudeBot, GPTBot, CCBot, Google-Extended, Applebot-Extended, Bytespider,
+      Amazonbot and meta-externalagent. A published AI-consent posture, but not a /.well-known/ document.
+  - path: /sitemap.xml
+    status: 200

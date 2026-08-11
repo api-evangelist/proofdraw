@@ -1,0 +1,125 @@
+generated: '2026-08-11'
+method: searched
+source: https://proofdraw.com/api
+derived_from: openapi/proofdraw-api-openapi.yml
+format: custom-envelope
+problem_json: false
+envelope:
+  shape: '{ "success": false, "data": null, "message": "…", "code": "…", "errors": { "field": ["…"] } }'
+  discriminator_field: code
+  content_type: application/json
+  note: >-
+    Errors are NOT RFC 9457 problem+json. The machine-readable signal is the `code` string, enumerated in
+    components.schemas.Error of the published OpenAPI. `errors` carries per-field validation detail on 422.
+    There is no `type` URI, no per-error documentation URL, and no error-reference page on the site — the
+    docs say the full error reference "lives in docs/api-spec.md", which is not published (404).
+codes:
+  - code: validation_failed
+    status: 422
+    title: Invalid payload
+    meaning: >-
+      Missing or malformed field, password under 8 chars, email already registered, or a
+      `terms_accepted_at` older than the current Terms effective date.
+    remediation: Read the per-field `errors` map and correct the request. Do not retry unchanged.
+    retryable: false
+    operations:
+      - POST /v1/auth/login
+      - POST /v1/auth/register
+      - PATCH /v1/me
+      - PUT /v1/me/profile
+      - POST /v1/draws
+      - POST /v1/draws/instant
+      - POST /v1/draws/{id}/entries
+  - code: unauthenticated
+    status: 401
+    title: Missing or invalid API key
+    meaning: No Authorization bearer header, or a key that does not resolve.
+    remediation: Re-issue a key via POST /v1/auth/login. Keys are never re-displayed after issuance.
+    retryable: false
+  - code: tier_limit_exceeded
+    status: 403
+    title: Plan draw cap reached
+    meaning: >-
+      The caller is at or over their draw cap. On the free tier that cap is 5 draws LIFETIME — no monthly
+      reset — so this is terminal for a free account, not a wait-and-retry condition.
+    remediation: Check GET /v1/me for usage vs limits; contact hello@proofdraw.com for a higher cap.
+    retryable: false
+    operations:
+      - POST /v1/draws
+      - POST /v1/draws/instant
+  - code: entry_limit_exceeded
+    status: 422
+    title: Entries exceed the per-draw cap
+    meaning: >-
+      Entry count exceeds the tier's total entries-per-draw cap (100 on free). Distinct from the flat
+      5,000-entries-per-call batch ceiling, which is a request-size limit rather than a plan limit.
+    remediation: Read the tier caps from GET /v1/me and split or shrink the entry list.
+    retryable: false
+  - code: not_found
+    status: 404
+    title: Draw not found or not yours
+    meaning: >-
+      No draw with this id, or it belongs to another caller. GET /v1/draws/{id} scopes strictly to the
+      authenticated account; cross-operator reads are the public /v/{id} page, not the API.
+    remediation: Verify the draw id. A 404 here does not distinguish "absent" from "not yours" — by design.
+    retryable: false
+  - code: state_conflict
+    status: 409
+    title: Operation not valid in the draw's current state
+    meaning: >-
+      Sealing a draw that is already sealed/resolved/cancelled, sealing a draw with zero entries, adding
+      entries to a sealed draw, deleting a sealed draw, or resolving a draw that is not yet sealed. Sealed
+      draws are permanent public commitments and cannot be deleted.
+    remediation: Read `state` from GET /v1/draws/{id} and branch. Never retry blind.
+    retryable: false
+  - code: not_yet_available
+    status: 409
+    title: drand round has not published yet
+    meaning: >-
+      Resolve was called before `drand_round_time` (+ ~1s publish lag). The randomness genuinely does not
+      exist yet.
+    remediation: >-
+      Wait until drand_round_time, then retry — or let the auto-resolver cron (runs every minute) handle it
+      and take the webhook.
+    retryable: true
+  - code: drand_unavailable
+    status: 503
+    title: drand HTTP API briefly unreachable
+    meaning: Transient upstream failure reaching the League of Entropy beacon.
+    remediation: Retry after a few seconds. The auto-resolver picks it up on the next cron tick regardless.
+    retryable: true
+  - code: seal_failed
+    status: 500
+    title: Seal step failed after entries persisted
+    meaning: >-
+      Hash computed and entries persisted, but either the git push to proofdraw/draw-lists failed, or the
+      commit landed too close to the drand round time to satisfy the 10-second safety-margin invariant.
+      The draw remains `open`.
+    remediation: Call POST /v1/draws/{id}/seal again, typically with a larger round_offset_seconds.
+    retryable: true
+  - code: rate_limited
+    status: null
+    title: Rate limit exceeded
+    meaning: >-
+      Present in the Error `code` enum of the published OpenAPI, but NO operation declares a 429 response
+      and no numeric limit is published. The status code an agent should expect is undocumented.
+    remediation: Read X-RateLimit-Limit / X-RateLimit-Remaining on every response and back off.
+    retryable: true
+    gap: true
+  - code: internal_error
+    status: 500
+    title: Unhandled server error
+    meaning: Generic terminal failure.
+    remediation: Report to hello@proofdraw.com.
+    retryable: false
+plain_text_errors:
+  note: >-
+    The public verification reads GET /list/{hash} and GET /list/{hash}/ots return PLAIN TEXT error bodies,
+    not the JSON envelope — 400 when the hash fails the ^[0-9a-f]{64}$ regex, 404 when no sealed list (or
+    no OTS proof yet) exists for that hash. OTS attestation is best-effort at seal time, so a 404 on the
+    .ots path can be a timing state rather than a permanent absence.
+gaps:
+  - No error reference page is published; the docs point at docs/api-spec.md, which returns 404.
+  - No error `type` URIs and no per-code documentation anchors.
+  - The `rate_limited` code has no declared HTTP status anywhere in the spec or docs.
+  - Not RFC 9457 — agents must special-case the envelope.

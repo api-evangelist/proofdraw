@@ -1,0 +1,1412 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ProofDraw API",
+    "version": "1.0.0",
+    "description": "Provably fair winner/loser selection. Every draw is sealed with SHA-256,\ndecided by the drand public randomness beacon, and independently verifiable\nby anyone — in the browser, from public sources alone.\n\n**Flow**: create a draw → add entries → seal (the entry list + a *future*\ndrand round are hashed together and committed publicly) → when the round\narrives, `winner_row = drand_value mod N`. Or do it all in one call with\n`POST /v1/draws/instant`.\n\n**Envelope**: every response is `{ \"success\": bool, \"data\": …, \"message\": string }`.\nErrors add a machine-readable `code`.\n\n**Rate limits**: per API key. `X-RateLimit-Limit` and `X-RateLimit-Remaining`\nheaders are returned on every response.\n",
+    "termsOfService": "https://proofdraw.com/terms",
+    "contact": {
+      "name": "ProofDraw",
+      "email": "hello@proofdraw.com",
+      "url": "https://proofdraw.com/contact"
+    }
+  },
+  "externalDocs": {
+    "description": "Human-readable API documentation",
+    "url": "https://proofdraw.com/api"
+  },
+  "servers": [
+    {
+      "url": "https://proofdraw.com/api",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "System"
+    },
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Account"
+    },
+    {
+      "name": "Draws"
+    },
+    {
+      "name": "Verification",
+      "description": "Public, unauthenticated artifacts used to verify a draw."
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Health check",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Service is up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "time": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Exchange email + password for a fresh API key",
+        "description": "Each call issues a **new** key; existing keys keep working. The raw key\nis returned only in this response. Sandbox-tier users receive\n`pd_test_*` keys; all other tiers receive `pd_live_*`.\n",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Key issued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthKeyResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Create a free-tier account",
+        "description": "Creates a `free`-tier user (5 draws total lifetime, 100 entries per\ndraw, 60 requests/min) and returns a `pd_live_*` API key.\n`terms_accepted_at` must be at or after the current terms effective\ndate — send the moment of acceptance as an ISO-8601 timestamp.\n",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "terms_accepted_at"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "minLength": 8,
+                    "maxLength": 255
+                  },
+                  "terms_accepted_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account created, key issued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthKeyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Current account, usage, and limits",
+        "responses": {
+          "200": {
+            "description": "Account info.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "user": {
+                              "$ref": "#/components/schemas/User"
+                            },
+                            "profile": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/components/schemas/Profile"
+                                }
+                              ],
+                              "nullable": true
+                            },
+                            "usage": {
+                              "$ref": "#/components/schemas/Usage"
+                            },
+                            "limits": {
+                              "$ref": "#/components/schemas/Limits"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Update name, email, or password",
+        "description": "Changing the password requires `current_password`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 160
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "minLength": 8,
+                    "maxLength": 200
+                  },
+                  "current_password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "user": {
+                              "$ref": "#/components/schemas/User"
+                            },
+                            "profile": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/components/schemas/Profile"
+                                }
+                              ],
+                              "nullable": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/v1/me/profile": {
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Create or replace the account's business profile",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Profile"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "profile": {
+                              "$ref": "#/components/schemas/Profile"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/v1/draws": {
+      "get": {
+        "tags": [
+          "Draws"
+        ],
+        "summary": "List your draws",
+        "description": "Returns up to 100 most recent draws, newest first.",
+        "responses": {
+          "200": {
+            "description": "Draws.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "draws": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/Draw"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Draws"
+        ],
+        "summary": "Create a draw",
+        "description": "Creates a draw in state `open`. If `callback_url` is set, the response\nincludes `callback_secret` (HMAC key for webhook signatures) — this is\nthe **only** time it is returned.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrawCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Draw created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrawResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/TierLimit"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/v1/draws/instant": {
+      "post": {
+        "tags": [
+          "Draws"
+        ],
+        "summary": "Create, add entries, and seal in one call",
+        "description": "The recommended endpoint when you already have the full entrant list.\nWith `wait: true`, blocks until the drand round arrives (~32–35 s with\nquicknet defaults) and returns the **resolved** draw with the winner.\nIf create + entries succeed but the seal step fails, the open draw and\ntickets are returned with HTTP 500 / `code: seal_failed` — retry via\n`POST /v1/draws/{id}/seal`.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/DrawCreate"
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "entries"
+                    ],
+                    "properties": {
+                      "entries": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 5000,
+                        "items": {
+                          "$ref": "#/components/schemas/EntryInput"
+                        }
+                      },
+                      "round_offset_seconds": {
+                        "type": "integer",
+                        "minimum": 15,
+                        "maximum": 604800,
+                        "default": 30
+                      },
+                      "wait": {
+                        "type": "boolean",
+                        "default": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Draw sealed (and resolved, when `wait` was true and the round arrived in time).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SealedDrawResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/TierLimit"
+          },
+          "409": {
+            "$ref": "#/components/responses/StateConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "500": {
+            "description": "Draw + entries persisted but the seal step failed (`code: seal_failed`). Retry the seal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/draws/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/DrawId"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Draws"
+        ],
+        "summary": "Fetch a draw",
+        "responses": {
+          "200": {
+            "description": "The draw in its current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrawResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Draws"
+        ],
+        "summary": "Cancel an open draw",
+        "description": "Only draws in state `open` can be cancelled. Sealed draws are public commitments and cannot be erased.",
+        "responses": {
+          "200": {
+            "description": "Draw cancelled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrawResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/StateConflict"
+          }
+        }
+      }
+    },
+    "/v1/draws/{id}/entries": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/DrawId"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Draws"
+        ],
+        "summary": "Add entries in bulk",
+        "description": "Up to 5,000 entries per request. `ticket_id` is optional — omit it and\nthe server generates a Crockford-Base32 ticket. Supplied tickets must\nmatch `[A-Za-z0-9_\\-\\.]+` and be unique within the draw.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "entries"
+                ],
+                "properties": {
+                  "entries": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 5000,
+                    "items": {
+                      "$ref": "#/components/schemas/EntryInput"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Entries added.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "added": {
+                              "type": "integer"
+                            },
+                            "entry_count": {
+                              "type": "integer"
+                            },
+                            "tickets": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/StateConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/v1/draws/{id}/seal": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/DrawId"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Draws"
+        ],
+        "summary": "Seal the draw",
+        "description": "Freezes the entry list: picks a future drand round, renders the\ncanonical v2 list file (the round is in the header, so one SHA-256\nbinds list **and** round), pushes it to the public\n`proofdraw/draw-lists` git mirror, and submits the hash to an\nOpenTimestamps calendar. The commit must land at least 10 s before the\nround publishes or the seal aborts. With `wait: true`, holds the\nconnection until the round arrives and returns the resolved draw\n(bounded by the server's wait cap, default 60 s).\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "round_offset_seconds": {
+                    "type": "integer",
+                    "minimum": 15,
+                    "maximum": 604800,
+                    "default": 30
+                  },
+                  "wait": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Draw sealed (resolved when `wait` was true and the round arrived in time).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SealedDrawResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/StateConflict"
+          }
+        }
+      }
+    },
+    "/v1/draws/{id}/resolve": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/DrawId"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Draws"
+        ],
+        "summary": "Resolve a sealed draw now",
+        "description": "Fetches the committed drand round and computes\n`winner_row = drand_value mod N`. Draws also auto-resolve within ~60 s\nof the round time; use this endpoint when you need the result the\nmoment it is available. Idempotent on already-resolved draws.\n",
+        "responses": {
+          "200": {
+            "description": "Resolved draw.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrawResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Not sealed (`state_conflict`), or the drand round has not been published yet (`not_yet_available`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "drand API unreachable (`drand_unavailable`) — transient, retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/list/{hash}": {
+      "servers": [
+        {
+          "url": "https://proofdraw.com"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "Download a sealed entry list",
+        "description": "The exact bytes the published SHA-256 commits to (plain text, UTF-8,\nLF; `# `-prefixed header lines carry draw id, chain, round, round time\nand entry count, then one ticket per line). Re-hash the bytes to\nverify. Also mirrored at `github.com/proofdraw/draw-lists`.\n",
+        "security": [],
+        "parameters": [
+          {
+            "name": "hash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sealed list bytes.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown hash."
+          }
+        }
+      }
+    },
+    "/list/{hash}/ots": {
+      "servers": [
+        {
+          "url": "https://proofdraw.com"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "Download the OpenTimestamps proof for a sealed list",
+        "description": "Verify with `ots verify` against the list file. Calendar attestations upgrade to Bitcoin block anchors within ~24 h of sealing.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "hash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Binary `.ots` proof.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No OTS proof for this hash."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API key: `Authorization: Bearer pd_live_…` (or `pd_test_…` for sandbox keys)."
+      }
+    },
+    "parameters": {
+      "DrawId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Draw public id — 4 uppercase Crockford-Base32 characters.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9A-Z]{4}$",
+          "example": "K7M2"
+        }
+      }
+    },
+    "responses": {
+      "Unauthenticated": {
+        "description": "Missing or invalid API key (`unauthenticated`).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ValidationFailed": {
+        "description": "Invalid payload (`validation_failed` / `entry_limit_exceeded`).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Draw not found or not yours (`not_found`).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "StateConflict": {
+        "description": "Operation not valid in the draw's current state (`state_conflict`).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "TierLimit": {
+        "description": "Plan draw cap reached (`tier_limit_exceeded`).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Envelope": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "data": {
+            "nullable": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "validation_failed",
+              "unauthenticated",
+              "tier_limit_exceeded",
+              "not_found",
+              "state_conflict",
+              "not_yet_available",
+              "entry_limit_exceeded",
+              "rate_limited",
+              "seal_failed",
+              "internal_error",
+              "drand_unavailable"
+            ]
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "free",
+              "starter",
+              "pro",
+              "enterprise",
+              "sandbox"
+            ]
+          }
+        }
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "company_name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 160
+          },
+          "website": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "contact_name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 120
+          },
+          "contact_email": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 160
+          },
+          "contact_phone": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 40
+          },
+          "address_line1": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "address_line2": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "city": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 120
+          },
+          "region": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 120
+          },
+          "postal_code": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 20
+          },
+          "country": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 2,
+            "maxLength": 2,
+            "description": "ISO 3166-1 alpha-2"
+          }
+        }
+      },
+      "Usage": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": [
+              "lifetime",
+              "month"
+            ],
+            "description": "Whether the draw limit resets monthly or is a lifetime cap (free tier)."
+          },
+          "period_start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "draws_this_period": {
+            "type": "integer"
+          },
+          "draws_limit": {
+            "type": "integer",
+            "nullable": true,
+            "description": "null = unlimited."
+          }
+        }
+      },
+      "Limits": {
+        "type": "object",
+        "properties": {
+          "entries_per_draw": {
+            "type": "integer",
+            "nullable": true
+          },
+          "rate_per_minute": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "AuthKeyResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Envelope"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "api_key": {
+                    "type": "string",
+                    "example": "pd_live_8K3Q9R7M2X5V1N4B6C0D2E7F3G8H5J"
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "example": "pd_live_8K3Q"
+                  },
+                  "user": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "EntryInput": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_\\-\\.]+$",
+            "description": "Optional — omit to auto-generate. Your own customer ids, order numbers, or email hashes all work."
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "description": "Opaque to ProofDraw; stored as-is."
+          }
+        }
+      },
+      "DrawCreate": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "winner",
+              "loser"
+            ],
+            "default": "winner"
+          },
+          "winner_count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1,
+            "default": 1,
+            "description": "Multi-winner draws are enterprise-only in v1."
+          },
+          "drand_chain": {
+            "type": "string",
+            "enum": [
+              "quicknet",
+              "classic"
+            ],
+            "default": "quicknet"
+          },
+          "callback_url": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 500,
+            "description": "Webhook target for draw.sealed / draw.resolved / draw.cancelled events."
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "description": "Opaque",
+            "max 4 KB.": null
+          }
+        }
+      },
+      "Draw": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "K7M2"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "sealed",
+              "resolved",
+              "cancelled"
+            ]
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "winner",
+              "loser"
+            ]
+          },
+          "winner_count": {
+            "type": "integer"
+          },
+          "entry_count": {
+            "type": "integer"
+          },
+          "drand_chain": {
+            "type": "string",
+            "enum": [
+              "quicknet",
+              "classic"
+            ]
+          },
+          "drand_round": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "drand_round_time": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "list_hash": {
+            "type": "string",
+            "nullable": true,
+            "description": "SHA-256 over the sealed list bytes."
+          },
+          "list_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "verify_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Public per-draw verification page."
+          },
+          "winner_row": {
+            "type": "integer",
+            "nullable": true,
+            "description": "0-based index into the sealed list."
+          },
+          "winner_ticket": {
+            "type": "string",
+            "nullable": true
+          },
+          "callback_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "callback_secret": {
+            "type": "string",
+            "nullable": true,
+            "description": "Returned only on the creating response. HMAC key for webhook signatures."
+          },
+          "public_commit_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "sealed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "resolved_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ots_proof_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "ots_calendar_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "ots_attested_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "DrawResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Envelope"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "draw": {
+                    "$ref": "#/components/schemas/Draw"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "SealedDrawResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Envelope"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "draw": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/Draw"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "commitment_text": {
+                            "type": "string",
+                            "description": "Publish this to a public",
+                            "timestamped channel before the round time.": null
+                          },
+                          "tweet_intent_url": {
+                            "type": "string",
+                            "description": "One-click X post of the commitment."
+                          },
+                          "tickets": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Instant endpoint only: all ticket ids in submission order."
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

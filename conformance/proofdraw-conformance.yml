@@ -1,0 +1,102 @@
+generated: '2026-08-11'
+method: derived
+source: openapi/proofdraw-api-openapi.yml
+docs: https://proofdraw.com/api
+note: >-
+  Derived from the published OpenAPI plus the public documentation. ProofDraw publishes no certifications
+  and no compliance program, so no `Compliance` pointer is emitted — its standards story is cryptographic
+  and protocol-level, not regulatory.
+standards:
+  - id: openapi-3.0
+    conforms: true
+    evidence: 'openapi: 3.0.3 served at https://proofdraw.com/openapi.json (13 paths, 16 operations)'
+  - id: apis-json
+    conforms: true
+    evidence: >-
+      First-party APIs.json 0.16 index published at https://proofdraw.com/apis.json listing the OpenAPI,
+      documentation and terms of service.
+  - id: openapi-3.1
+    conforms: false
+    evidence: Spec is 3.0.3; no webhooks object, no JSON Schema 2020-12 dialect.
+  - id: oauth2
+    conforms: false
+    evidence: Only securityScheme is http/bearer (static API key). No OAuth flows.
+  - id: oidc
+    conforms: false
+    evidence: No openIdConnect scheme; /.well-known/openid-configuration returns 404.
+  - id: rfc6750-bearer-token
+    conforms: partial
+    evidence: >-
+      Uses the Authorization Bearer header form, but the credential is a static API key rather than an
+      OAuth 2.0 access token, and no WWW-Authenticate challenge is documented on 401.
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      Errors use a custom envelope { success, data, message, code, errors } with content type
+      application/json. No application/problem+json anywhere in the spec.
+  - id: rfc9116-security-txt
+    conforms: false
+    evidence: /.well-known/security.txt returns 404.
+  - id: rfc8594-sunset-header
+    conforms: false
+    evidence: No Sunset/Deprecation header support documented; no deprecated operations in the spec.
+  - id: rfc9727-api-catalog
+    conforms: false
+    evidence: /.well-known/api-catalog returns 404 (an apis.json is served at the site root instead).
+  - id: json-api
+    conforms: false
+    evidence: Custom envelope, not JSON:API media type or structure.
+  - id: idempotency-key
+    conforms: false
+    evidence: >-
+      No Idempotency-Key header or equivalent. Only POST /v1/draws/{id}/resolve is documented as naturally
+      idempotent. See conventions/proofdraw-conventions.yml.
+  - id: pagination
+    conforms: false
+    evidence: >-
+      GET /v1/draws caps silently at the 100 most recent draws with no cursor, offset, page-size parameter,
+      or truncation signal.
+  - id: rate-limit-headers
+    conforms: partial
+    evidence: >-
+      X-RateLimit-Limit / X-RateLimit-Remaining are documented in the OpenAPI info.description (the
+      pre-standard X- form, not the IETF `RateLimit` draft fields), but no numeric limits and no 429
+      response are published, and no headers were observed on the anonymous /api/health response.
+  - id: drand-league-of-entropy
+    conforms: true
+    evidence: >-
+      Randomness is sourced from the drand public beacon operated by the League of Entropy (Cloudflare,
+      EPFL, University of Chile, Kudelski Security and others). Two chains selectable per draw:
+      `quicknet` (3s rounds, genesis 1692803367) and `classic` (30s rounds, genesis 1595431050). The chain
+      and round are named in the sealed file header, so the round cannot be reinterpreted after the fact.
+  - id: opentimestamps
+    conforms: true
+    evidence: >-
+      Every sealed list hash is submitted to an OpenTimestamps calendar at seal time and upgraded to a
+      Bitcoin block anchor within ~24h. The proof is downloadable at GET /list/{hash}/ots and verifies with
+      the standard `ots verify` CLI. Documented at https://proofdraw.com/docs/opentimestamps.
+      Attestation is explicitly best-effort — a missing .ots is a documented state, not a failure.
+  - id: sha-256-commitment
+    conforms: true
+    evidence: >-
+      Canonical v2 list bytes (UTF-8, LF, header lines naming format version, draw id, chain, round,
+      round_time and entry count, then ticket ids one per line) are hashed with SHA-256; the URL of the
+      public read IS the hash, so re-hashing the response is itself the check.
+  - id: hmac-sha256-webhook-signing
+    conforms: true
+    evidence: 'X-ProofDraw-Signature: sha256=<hex>, keyed by the per-draw callback_secret.'
+  - id: content-signals-ai-preferences
+    conforms: true
+    evidence: >-
+      robots.txt publishes Content-Signal `search=yes,ai-train=no,use=reference` plus explicit Disallow
+      for ClaudeBot, GPTBot, CCBot, Google-Extended, Applebot-Extended, Bytespider, Amazonbot and
+      meta-externalagent. A machine-readable AI-usage reservation, Cloudflare-managed.
+regulatory:
+  certifications: []
+  programs: []
+  note: >-
+    No SOC 2, ISO 27001, PCI DSS, HIPAA, FedRAMP or GDPR compliance claim is published, and no trust
+    center exists (trust./security. subdomains and /trust, /security, /compliance all miss). This is a
+    notable gap against the company's own stated market: the About and Careers copy names "regulated
+    sweepstakes operators" and "compliance constraints" as the target buyer, and a Terms and Privacy
+    Policy are the only governance documents published.

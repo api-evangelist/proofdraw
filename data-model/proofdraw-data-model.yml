@@ -1,0 +1,166 @@
+generated: '2026-08-11'
+method: derived
+source: openapi/proofdraw-api-openapi.yml
+docs: https://proofdraw.com/api
+note: >-
+  Entity graph derived from components.schemas $ref links and id-reference fields in the published
+  OpenAPI, enriched with the identifier formats documented in the API reference Concepts section.
+identifier_conventions:
+  draw_id:
+    format: 4-char uppercase Crockford-Base32 (0-9 A-Z minus I L O U)
+    example: K7M2
+    space: ~1,000,000 combinations
+    note: Public commitment id. Integer primary keys are never exposed on draw resources.
+  ticket_id:
+    format: operator-supplied [A-Za-z0-9_\-\.]{1,64} or auto-generated XXXX-XXXX Crockford-Base32
+    space: ~1 trillion combinations for auto-generated tickets
+    uniqueness: enforced per draw
+    note: Auto-generated tickets deliberately do not embed the draw id, so they are safe to share.
+  list_hash:
+    format: 64 lowercase hex (SHA-256 of the canonical v2 list bytes)
+    note: Content address — the hash IS the URL path component for the public list and OTS reads.
+  user_id:
+    format: inconsistent
+    note: >-
+      A real contract defect: the auth responses show `"user": {"id": 1}` and `{"id": 42}` (integers)
+      while the GET /v1/me example shows `"id": "usr_…"` (a prefixed string). The published examples
+      disagree with each other, and the User schema does not settle it.
+entities:
+  - name: User
+    schema: components.schemas.User
+    description: Account holder. Carries the tier that gates draw and entry quotas.
+    fields: [id, name, email, tier]
+    id_field: id
+  - name: Profile
+    schema: components.schemas.Profile
+    description: >-
+      Business profile attached to the account; created or replaced wholesale by PUT /v1/me/profile.
+      Surfaces as the "Run by" attribution on public receipts.
+    parent: User
+  - name: Usage
+    schema: components.schemas.Usage
+    description: Current-period consumption counters (period_start, draws_this_period, draws_limit).
+    parent: User
+  - name: Limits
+    schema: components.schemas.Limits
+    description: Per-tier caps (draws, entries per draw) read at runtime from GET /v1/me.
+    parent: User
+  - name: Draw
+    schema: components.schemas.Draw
+    description: >-
+      The core aggregate. Moves through open -> sealed -> resolved, or open -> cancelled. Field population
+      is state-dependent: list_hash, list_url, verify_url, public_commit_url, drand_round and the OTS
+      fields appear only from `sealed`; winner_row, winner_ticket and resolved_at only from `resolved`.
+    fields:
+      - id
+      - name
+      - description
+      - state
+      - direction
+      - winner_count
+      - entry_count
+      - drand_chain
+      - drand_round
+      - drand_round_time
+      - list_hash
+      - list_url
+      - verify_url
+      - winner_row
+      - winner_ticket
+      - callback_url
+      - callback_secret
+      - public_commit_url
+      - sealed_at
+      - resolved_at
+      - created_at
+      - ots_proof_url
+      - ots_calendar_url
+      - ots_attested_at
+    id_field: id
+    states: [open, sealed, resolved, cancelled]
+    enums:
+      direction: [winner, loser]
+      drand_chain: [quicknet, classic]
+  - name: Entry
+    schema: components.schemas.EntryInput
+    description: >-
+      A ticket in a draw ({ticket_id?, metadata?}). Notably there is NO read model for entries — the API
+      exposes no GET for a draw's entries. The only readback of the entry set is the PUBLIC sealed list at
+      GET /list/{hash}, which carries ticket ids and no metadata.
+    parent: Draw
+  - name: SealedList
+    schema: null
+    description: >-
+      The canonical v2 list file: UTF-8, LF line endings, header lines naming format version, draw id,
+      chain, round, round_time and entry count, then ticket ids one per line with a trailing newline.
+      Content-addressed by SHA-256 and mirrored to github.com/proofdraw/draw-lists.
+    served_by: GET /list/{hash}
+  - name: OTSProof
+    schema: null
+    description: >-
+      Binary OpenTimestamps attestation over the list hash (application/vnd.opentimestamps.ots), upgraded
+      to a Bitcoin block anchor within ~24h.
+    served_by: GET /list/{hash}/ots
+  - name: WebhookEvent
+    schema: null
+    description: >-
+      draw.sealed / draw.resolved / draw.cancelled, HMAC-signed with the per-draw callback_secret. Payload
+      shape is not published — see asyncapi/proofdraw-webhooks.yml.
+    parent: Draw
+  - name: Envelope
+    schema: components.schemas.Envelope
+    description: Response wrapper ({success, data, message}); Error adds `code` and `errors`.
+    kind: envelope
+relationships:
+  - from: User
+    to: Draw
+    type: has_many
+    via: implicit ownership (every /v1/draws read scopes to the authenticated key)
+  - from: Draw
+    to: User
+    type: belongs_to
+    via: authenticated caller
+  - from: User
+    to: Profile
+    type: has_one
+    via: PUT /v1/me/profile
+  - from: User
+    to: Usage
+    type: has_one
+    via: GET /v1/me response
+  - from: User
+    to: Limits
+    type: has_one
+    via: tier
+  - from: Draw
+    to: Entry
+    type: has_many
+    via: entries[] on POST /v1/draws/{id}/entries and POST /v1/draws/instant
+  - from: Draw
+    to: SealedList
+    type: has_one
+    via: list_hash
+  - from: SealedList
+    to: OTSProof
+    type: has_one
+    via: list_hash
+  - from: Draw
+    to: WebhookEvent
+    type: has_many
+    via: callback_url
+  - from: Draw
+    to: DrandRound
+    type: belongs_to
+    via: drand_chain + drand_round
+    note: >-
+      External entity — the League of Entropy beacon round. Bound into the sealed file header at seal time
+      so the round cannot be swapped after the commitment.
+observations:
+  - The entry collection is write-only through the API; the public sealed list is the only read path.
+  - >-
+    callback_secret is a write-once field on Draw — present on the creating response and never again,
+    which makes it the only unrecoverable value in the model.
+  - >-
+    The verification receipt GET /v/{publicId} is documented in the API reference but is absent from the
+    published OpenAPI, so the entity graph's public face is not fully described by the machine-readable
+    contract.

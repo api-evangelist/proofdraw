@@ -1,0 +1,62 @@
+generated: '2026-08-11'
+method: searched
+source: https://proofdraw.com/api
+plan_count: 1
+currency: null
+public_price_list: false
+note: >-
+  ProofDraw publishes exactly one plan with hard numbers — the free tier — and no price points at all.
+  The /pricing route exists in the Vue SPA but is marked `requiresAuth: true`, so the plans page is only
+  reachable after sign-in; its client-side bundle (build/assets/Pricing-CNkFcxt9.js, fetched anonymously)
+  contains no price values, only the signed-in account's own caps plus a mailto to hello@proofdraw.com for
+  "custom pricing". Paid tiers are therefore contact-us: unlimited entries per draw and "more draws every
+  month", priced per customer. No `Pricing` link pointer is emitted in apis.yml because there is no public
+  pricing page to point at.
+plans:
+  - name: Free
+    internal_id: TIER_FREE
+    price: 0
+    currency: USD
+    billing_period: none
+    credit_card_required: false
+    limits:
+      draws: 5
+      draws_period: lifetime
+      entries_per_draw: 100
+      winner_count: 1
+    includes:
+      - Public verification page on every draw
+      - REST API + HMAC-signed webhook notifications
+      - OpenTimestamps anchoring of the sealed list hash
+      - Open-source in-browser verifier
+      - '"Run by" attribution on every public receipt'
+    overage: none
+    note: >-
+      The free cap is 5 draws TOTAL, lifetime — explicitly "no monthly reset". Exceeding it returns
+      403 tier_limit_exceeded, which is terminal rather than a wait-and-retry. Current usage vs limits is
+      readable at runtime from GET /v1/me (`usage.draws_this_period`, `usage.draws_limit`).
+    source: https://proofdraw.com/api
+  - name: Paid / custom
+    price: null
+    currency: null
+    billing_period: null
+    limits:
+      draws: null
+      entries_per_draw: unlimited
+    contact: hello@proofdraw.com
+    note: >-
+      Named on the authenticated plans page as "unlimited entries per draw and more draws every month,
+      with pricing tailored to how you run them". No published price, quota, or tier ladder. Multi-winner
+      draws (winner_count > 1) and cursor pagination on GET /v1/draws are both described in the API
+      reference as enterprise/on-request features rather than published plan entitlements.
+    source: https://proofdraw.com/build/assets/Pricing-CNkFcxt9.js
+evidence:
+  - url: https://proofdraw.com/pricing
+    status: 200
+    note: SPA shell only (1,662 bytes); route is requiresAuth, renders nothing anonymously.
+  - url: https://proofdraw.com/api
+    status: 200
+    note: Free-tier caps published in the API reference (register + account sections).
+  - url: https://proofdraw.com/build/assets/Pricing-CNkFcxt9.js
+    status: 200
+    note: Public JS chunk for the gated pricing page; carries no price values.

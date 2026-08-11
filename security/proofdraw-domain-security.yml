@@ -1,0 +1,16 @@
+generated: '2026-08-11'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: proofdraw.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct  4 00:56:57 2026 GMT
+  hsts: false
+domains:
+- domain: proofdraw.com
+  dnssec: false
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: quarantine
