@@ -9,7 +9,7 @@ description: >-
   raffles and sweepstakes, non-profit draws, audit sample selection and task allocation, with
   HMAC-signed webhooks and bearer API-key authentication.
 image: https://proofdraw.com/og.png
-url: https://proofdraw.apievangelist.com/apis.yml
+url: https://raw.githubusercontent.com/api-evangelist/proofdraw/refs/heads/main/apis.yml
 created: '2026-07-13'
 modified: '2026-08-11'
 specificationVersion: '0.21'
