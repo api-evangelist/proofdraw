@@ -1,0 +1,3557 @@
+{
+  "item": [
+    {
+      "id": "ee40a4f3-5d2c-4a57-b618-26c6814e5765",
+      "name": "System",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "972ebdf6-a1e2-418b-b807-530baf58d2b1",
+          "name": "Health check",
+          "request": {
+            "name": "Health check",
+            "description": {},
+            "url": {
+              "path": [
+                "health"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "0e5c6fd2-07bb-46e7-ae3c-556542f6e9ba",
+              "name": "Service is up.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "health"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"ok\",\n  \"time\": \"1967-02-18T21:59:36.367Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "b26ad248-8114-491a-9a7e-32170a9c6f64",
+      "name": "Auth",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "164536ea-f1f8-49fb-a403-7583ac0d4c23",
+          "name": "Exchange email + password for a fresh API key",
+          "request": {
+            "name": "Exchange email + password for a fresh API key",
+            "description": {
+              "content": "Each call issues a **new** key; existing keys keep working. The raw key\nis returned only in this response. Sandbox-tier users receive\n`pd_test_*` keys; all other tiers receive `pd_live_*`.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"<email>\",\n  \"password\": \"<password>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "51f5c186-8226-4278-bfdb-749a2ac0b502",
+              "name": "Key issued.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "auth",
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"<email>\",\n  \"password\": \"<password>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"api_key\": \"pd_live_8K3Q9R7M2X5V1N4B6C0D2E7F3G8H5J\",\n    \"prefix\": \"pd_live_8K3Q\",\n    \"user\": {\n      \"id\": 9070,\n      \"email\": \"SOzRpd@FdWqgcFimFqgQqSfwa.dkg\",\n      \"name\": \"string\",\n      \"tier\": \"starter\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "486633f5-0fe4-453f-bfeb-becf0a5df526",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "auth",
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"<email>\",\n  \"password\": \"<password>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c00752bd-3c44-495b-acac-1d435a57a5f3",
+              "name": "Invalid payload (`validation_failed` / `entry_limit_exceeded`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "auth",
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"<email>\",\n  \"password\": \"<password>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b2ec4c62-bb58-439f-8355-f598f2f8b42f",
+          "name": "Create a free-tier account",
+          "request": {
+            "name": "Create a free-tier account",
+            "description": {
+              "content": "Creates a `free`-tier user (5 draws total lifetime, 100 entries per\ndraw, 60 requests/min) and returns a `pd_live_*` API key.\n`terms_accepted_at` must be at or after the current terms effective\ndate — send the moment of acceptance as an ISO-8601 timestamp.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "auth",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<password>\",\n  \"terms_accepted_at\": \"<dateTime>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "8b2fea8e-60b2-463a-b43b-acdd07e0e0d9",
+              "name": "Account created, key issued.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "auth",
+                    "register"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<password>\",\n  \"terms_accepted_at\": \"<dateTime>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"api_key\": \"pd_live_8K3Q9R7M2X5V1N4B6C0D2E7F3G8H5J\",\n    \"prefix\": \"pd_live_8K3Q\",\n    \"user\": {\n      \"id\": 9070,\n      \"email\": \"SOzRpd@FdWqgcFimFqgQqSfwa.dkg\",\n      \"name\": \"string\",\n      \"tier\": \"starter\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "79548fac-53b5-4dc1-a0a7-7ce85b281d37",
+              "name": "Invalid payload (`validation_failed` / `entry_limit_exceeded`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "auth",
+                    "register"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<password>\",\n  \"terms_accepted_at\": \"<dateTime>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "06d4d3eb-29c4-4822-b515-394ca79219d0",
+      "name": "Account",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "078eade2-fbfe-44bd-b59b-a696feaeae9b",
+          "name": "Current account, usage, and limits",
+          "request": {
+            "name": "Current account, usage, and limits",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "dca965aa-5c56-4d10-bcca-1578ca635ee2",
+              "name": "Account info.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"user\": {\n      \"id\": 1155,\n      \"email\": \"OxV1Wyg6JSOF@iehIRwEMnrfLpMzuKPbBlaosahtldy.vou\",\n      \"name\": \"string\",\n      \"tier\": \"sandbox\"\n    },\n    \"profile\": {\n      \"company_name\": \"string\",\n      \"website\": \"string\",\n      \"description\": \"string\",\n      \"contact_name\": \"string\",\n      \"contact_email\": \"string\",\n      \"contact_phone\": \"string\",\n      \"address_line1\": \"string\",\n      \"address_line2\": \"string\",\n      \"city\": \"string\",\n      \"region\": \"string\",\n      \"postal_code\": \"string\",\n      \"country\": \"st\"\n    },\n    \"usage\": {\n      \"period\": \"lifetime\",\n      \"period_start\": \"2013-07-29T08:14:32.680Z\",\n      \"draws_this_period\": 9445,\n      \"draws_limit\": 7568\n    },\n    \"limits\": {\n      \"entries_per_draw\": 5877,\n      \"rate_per_minute\": 4804\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f9a899f9-7402-4ece-b484-01b25faa76a7",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a40fef3d-775e-4590-8600-e80e1a21ea48",
+          "name": "Update name, email, or password",
+          "request": {
+            "name": "Update name, email, or password",
+            "description": {
+              "content": "Changing the password requires `current_password`.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<password>\",\n  \"current_password\": \"<password>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "1fe4a6d8-2808-4d39-bfc7-6a570db22fe1",
+              "name": "Account updated.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<password>\",\n  \"current_password\": \"<password>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"user\": {\n      \"id\": 3051,\n      \"email\": \"Yc7Rt8PbCjN2z@nghfQbQgFOL.eljm\",\n      \"name\": \"string\",\n      \"tier\": \"sandbox\"\n    },\n    \"profile\": {\n      \"company_name\": \"string\",\n      \"website\": \"string\",\n      \"description\": \"string\",\n      \"contact_name\": \"string\",\n      \"contact_email\": \"string\",\n      \"contact_phone\": \"string\",\n      \"address_line1\": \"string\",\n      \"address_line2\": \"string\",\n      \"city\": \"string\",\n      \"region\": \"string\",\n      \"postal_code\": \"string\",\n      \"country\": \"st\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "39f31a71-2542-498d-8bea-2141140a9a7d",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<password>\",\n  \"current_password\": \"<password>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "446e56ad-2a28-4ee6-bc6f-a707b73cbe93",
+              "name": "Invalid payload (`validation_failed` / `entry_limit_exceeded`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<password>\",\n  \"current_password\": \"<password>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a01e657f-d44c-471a-b53a-5e27bebfa99e",
+          "name": "Create or replace the account's business profile",
+          "request": {
+            "name": "Create or replace the account's business profile",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "me",
+                "profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"<string>\",\n  \"website\": \"<string>\",\n  \"description\": \"<string>\",\n  \"contact_name\": \"<string>\",\n  \"contact_email\": \"<string>\",\n  \"contact_phone\": \"<string>\",\n  \"address_line1\": \"<string>\",\n  \"address_line2\": \"<string>\",\n  \"city\": \"<string>\",\n  \"region\": \"<string>\",\n  \"postal_code\": \"<string>\",\n  \"country\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "b8e9f487-f3af-48c1-8bc6-100d722be493",
+              "name": "Profile saved.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "me",
+                    "profile"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"company_name\": \"<string>\",\n  \"website\": \"<string>\",\n  \"description\": \"<string>\",\n  \"contact_name\": \"<string>\",\n  \"contact_email\": \"<string>\",\n  \"contact_phone\": \"<string>\",\n  \"address_line1\": \"<string>\",\n  \"address_line2\": \"<string>\",\n  \"city\": \"<string>\",\n  \"region\": \"<string>\",\n  \"postal_code\": \"<string>\",\n  \"country\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"profile\": {\n      \"company_name\": \"<string>\",\n      \"website\": \"<string>\",\n      \"description\": \"<string>\",\n      \"contact_name\": \"<string>\",\n      \"contact_email\": \"<string>\",\n      \"contact_phone\": \"<string>\",\n      \"address_line1\": \"<string>\",\n      \"address_line2\": \"<string>\",\n      \"city\": \"<string>\",\n      \"region\": \"<string>\",\n      \"postal_code\": \"<string>\",\n      \"country\": \"<string>\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2bc46fee-eff9-4602-b29b-33731c51d3f8",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "me",
+                    "profile"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"company_name\": \"<string>\",\n  \"website\": \"<string>\",\n  \"description\": \"<string>\",\n  \"contact_name\": \"<string>\",\n  \"contact_email\": \"<string>\",\n  \"contact_phone\": \"<string>\",\n  \"address_line1\": \"<string>\",\n  \"address_line2\": \"<string>\",\n  \"city\": \"<string>\",\n  \"region\": \"<string>\",\n  \"postal_code\": \"<string>\",\n  \"country\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "49317536-2f56-434c-986a-4ff1f031ef83",
+              "name": "Invalid payload (`validation_failed` / `entry_limit_exceeded`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "me",
+                    "profile"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"company_name\": \"<string>\",\n  \"website\": \"<string>\",\n  \"description\": \"<string>\",\n  \"contact_name\": \"<string>\",\n  \"contact_email\": \"<string>\",\n  \"contact_phone\": \"<string>\",\n  \"address_line1\": \"<string>\",\n  \"address_line2\": \"<string>\",\n  \"city\": \"<string>\",\n  \"region\": \"<string>\",\n  \"postal_code\": \"<string>\",\n  \"country\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "8f492689-eec2-4ece-b5a8-1a2c1edead09",
+      "name": "Draws",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "72653202-b71c-40ae-baac-586ac07edc00",
+          "name": "List your draws",
+          "request": {
+            "name": "List your draws",
+            "description": {
+              "content": "Returns up to 100 most recent draws, newest first.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "draws"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "4fa853aa-0b5b-41d6-9f5e-ebfd3ccde769",
+              "name": "Draws.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"draws\": [\n      {\n        \"id\": \"K7M2\",\n        \"name\": \"string\",\n        \"description\": \"string\",\n        \"state\": \"cancelled\",\n        \"direction\": \"loser\",\n        \"winner_count\": 9783,\n        \"entry_count\": 6029,\n        \"drand_chain\": \"quicknet\",\n        \"drand_round\": 3717,\n        \"drand_round_time\": \"1983-07-13T17:06:00.137Z\",\n        \"list_hash\": \"string\",\n        \"list_url\": \"string\",\n        \"verify_url\": \"string\",\n        \"winner_row\": 9548,\n        \"winner_ticket\": \"string\",\n        \"callback_url\": \"string\",\n        \"callback_secret\": \"string\",\n        \"public_commit_url\": \"string\",\n        \"sealed_at\": \"1950-10-24T00:34:17.063Z\",\n        \"resolved_at\": \"2010-12-17T03:00:45.269Z\",\n        \"created_at\": \"2025-12-13T15:38:42.616Z\",\n        \"ots_proof_url\": \"string\",\n        \"ots_calendar_url\": \"string\",\n        \"ots_attested_at\": \"1992-04-13T16:13:47.467Z\"\n      },\n      {\n        \"id\": \"K7M2\",\n        \"name\": \"string\",\n        \"description\": \"string\",\n        \"state\": \"open\",\n        \"direction\": \"winner\",\n        \"winner_count\": 6083,\n        \"entry_count\": 6219,\n        \"drand_chain\": \"classic\",\n        \"drand_round\": 8076,\n        \"drand_round_time\": \"1957-02-25T05:31:26.633Z\",\n        \"list_hash\": \"string\",\n        \"list_url\": \"string\",\n        \"verify_url\": \"string\",\n        \"winner_row\": 6688,\n        \"winner_ticket\": \"string\",\n        \"callback_url\": \"string\",\n        \"callback_secret\": \"string\",\n        \"public_commit_url\": \"string\",\n        \"sealed_at\": \"2002-06-22T13:54:11.994Z\",\n        \"resolved_at\": \"1981-02-20T06:04:10.916Z\",\n        \"created_at\": \"1954-02-17T20:54:24.928Z\",\n        \"ots_proof_url\": \"string\",\n        \"ots_calendar_url\": \"string\",\n        \"ots_attested_at\": \"1952-03-28T03:01:26.638Z\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "258579b7-8c77-419a-8f4c-f51bbf59ecc0",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "cd5ecfa5-314f-4b51-bac0-95380f67c085",
+          "name": "Create a draw",
+          "request": {
+            "name": "Create a draw",
+            "description": {
+              "content": "Creates a draw in state `open`. If `callback_url` is set, the response\nincludes `callback_secret` (HMAC key for webhook signatures) — this is\nthe **only** time it is returned.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "draws"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "ac2cc7ce-54eb-4273-a06e-aa1f46a0c31a",
+              "name": "Draw created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"draw\": {\n      \"id\": \"K7M2\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"state\": \"resolved\",\n      \"direction\": \"winner\",\n      \"winner_count\": 5898,\n      \"entry_count\": 626,\n      \"drand_chain\": \"classic\",\n      \"drand_round\": 610,\n      \"drand_round_time\": \"2010-11-18T19:24:05.213Z\",\n      \"list_hash\": \"string\",\n      \"list_url\": \"string\",\n      \"verify_url\": \"string\",\n      \"winner_row\": 9155,\n      \"winner_ticket\": \"string\",\n      \"callback_url\": \"string\",\n      \"callback_secret\": \"string\",\n      \"public_commit_url\": \"string\",\n      \"sealed_at\": \"2022-01-30T01:51:27.167Z\",\n      \"resolved_at\": \"2015-11-04T10:16:07.722Z\",\n      \"created_at\": \"2025-04-07T15:33:30.505Z\",\n      \"ots_proof_url\": \"string\",\n      \"ots_calendar_url\": \"string\",\n      \"ots_attested_at\": \"1994-01-09T03:53:45.870Z\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "74a733a7-2628-45c4-93de-e8006323c7d6",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ad24f90a-ab30-41c0-a000-e15afa30dac3",
+              "name": "Plan draw cap reached (`tier_limit_exceeded`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "edd64a66-fdee-4526-a4e1-703e0c22763f",
+              "name": "Invalid payload (`validation_failed` / `entry_limit_exceeded`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5cdd7a7a-bc2c-4398-a6f1-1bb8069cd89b",
+          "name": "Create, add entries, and seal in one call",
+          "request": {
+            "name": "Create, add entries, and seal in one call",
+            "description": {
+              "content": "The recommended endpoint when you already have the full entrant list.\nWith `wait: true`, blocks until the drand round arrives (~32–35 s with\nquicknet defaults) and returns the **resolved** draw with the winner.\nIf create + entries succeed but the seal step fails, the open draw and\ntickets are returned with HTTP 500 / `code: seal_failed` — retry via\n`POST /v1/draws/{id}/seal`.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "draws",
+                "instant"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ],\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\",\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "54a9bcc4-af9d-4031-ad3c-4d97691fc028",
+              "name": "Draw sealed (and resolved, when `wait` was true and the round arrived in time).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    "instant"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ],\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\",\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"draw\": {\n      \"id\": \"K7M2\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"state\": \"sealed\",\n      \"direction\": \"winner\",\n      \"winner_count\": 3831,\n      \"entry_count\": 3644,\n      \"drand_chain\": \"quicknet\",\n      \"drand_round\": 781,\n      \"drand_round_time\": \"1994-06-29T19:02:48.976Z\",\n      \"list_hash\": \"string\",\n      \"list_url\": \"string\",\n      \"verify_url\": \"string\",\n      \"winner_row\": 3248,\n      \"winner_ticket\": \"string\",\n      \"callback_url\": \"string\",\n      \"callback_secret\": \"string\",\n      \"public_commit_url\": \"string\",\n      \"sealed_at\": \"1994-06-17T01:20:39.013Z\",\n      \"resolved_at\": \"1977-12-15T06:40:02.254Z\",\n      \"created_at\": \"1999-03-10T20:26:52.054Z\",\n      \"ots_proof_url\": \"string\",\n      \"ots_calendar_url\": \"string\",\n      \"ots_attested_at\": \"1955-01-13T20:09:09.135Z\",\n      \"commitment_text\": \"string\",\n      \"tweet_intent_url\": \"string\",\n      \"tickets\": [\n        \"string\",\n        \"string\"\n      ]\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "13dfa731-39ac-448e-a08c-9725a7a289f5",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    "instant"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ],\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\",\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "65729176-2422-4a83-a9db-772e99e8a972",
+              "name": "Plan draw cap reached (`tier_limit_exceeded`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    "instant"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ],\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\",\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6c7da656-13ca-4f23-bfc7-9cc32d0c53ca",
+              "name": "Operation not valid in the draw's current state (`state_conflict`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    "instant"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ],\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\",\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "950fad8c-6c5d-49c7-8570-d20fb7f0cc6f",
+              "name": "Invalid payload (`validation_failed` / `entry_limit_exceeded`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    "instant"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ],\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\",\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4a40d9d8-176e-4c5a-9625-39b7baa271da",
+              "name": "Draw + entries persisted but the seal step failed (`code: seal_failed`). Retry the seal.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    "instant"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ],\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"direction\": \"winner\",\n  \"winner_count\": 1,\n  \"drand_chain\": \"quicknet\",\n  \"callback_url\": \"<string>\",\n  \"metadata\": \"<object>\",\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "aa477afd-2f22-4e9f-b002-41e281ef779e",
+          "name": "Fetch a draw",
+          "request": {
+            "name": "Fetch a draw",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "draws",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "8e34be79-a172-40ad-a591-2bd3484aa80d",
+              "name": "The draw in its current state.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"draw\": {\n      \"id\": \"K7M2\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"state\": \"resolved\",\n      \"direction\": \"winner\",\n      \"winner_count\": 5898,\n      \"entry_count\": 626,\n      \"drand_chain\": \"classic\",\n      \"drand_round\": 610,\n      \"drand_round_time\": \"2010-11-18T19:24:05.213Z\",\n      \"list_hash\": \"string\",\n      \"list_url\": \"string\",\n      \"verify_url\": \"string\",\n      \"winner_row\": 9155,\n      \"winner_ticket\": \"string\",\n      \"callback_url\": \"string\",\n      \"callback_secret\": \"string\",\n      \"public_commit_url\": \"string\",\n      \"sealed_at\": \"2022-01-30T01:51:27.167Z\",\n      \"resolved_at\": \"2015-11-04T10:16:07.722Z\",\n      \"created_at\": \"2025-04-07T15:33:30.505Z\",\n      \"ots_proof_url\": \"string\",\n      \"ots_calendar_url\": \"string\",\n      \"ots_attested_at\": \"1994-01-09T03:53:45.870Z\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a45a06bf-6037-4ef6-b1fa-ac62630ac2e1",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2cb6bca8-5b4c-4072-bf39-670676e7ce0d",
+              "name": "Draw not found or not yours (`not_found`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "82e1031c-d890-4f9c-bdca-5dff11eb53b0",
+          "name": "Cancel an open draw",
+          "request": {
+            "name": "Cancel an open draw",
+            "description": {
+              "content": "Only draws in state `open` can be cancelled. Sealed draws are public commitments and cannot be erased.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "draws",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "67ac0ae6-ea8d-47e1-afc8-1632c105d5d7",
+              "name": "Draw cancelled.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"draw\": {\n      \"id\": \"K7M2\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"state\": \"resolved\",\n      \"direction\": \"winner\",\n      \"winner_count\": 5898,\n      \"entry_count\": 626,\n      \"drand_chain\": \"classic\",\n      \"drand_round\": 610,\n      \"drand_round_time\": \"2010-11-18T19:24:05.213Z\",\n      \"list_hash\": \"string\",\n      \"list_url\": \"string\",\n      \"verify_url\": \"string\",\n      \"winner_row\": 9155,\n      \"winner_ticket\": \"string\",\n      \"callback_url\": \"string\",\n      \"callback_secret\": \"string\",\n      \"public_commit_url\": \"string\",\n      \"sealed_at\": \"2022-01-30T01:51:27.167Z\",\n      \"resolved_at\": \"2015-11-04T10:16:07.722Z\",\n      \"created_at\": \"2025-04-07T15:33:30.505Z\",\n      \"ots_proof_url\": \"string\",\n      \"ots_calendar_url\": \"string\",\n      \"ots_attested_at\": \"1994-01-09T03:53:45.870Z\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b3105760-091e-446b-8870-7f2c981d2426",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "53683388-8bcd-4ad1-96a8-3d00cf86dae4",
+              "name": "Draw not found or not yours (`not_found`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6923536c-f941-4199-b305-3b1ba53428be",
+              "name": "Operation not valid in the draw's current state (`state_conflict`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e2e5a6ce-df47-4bb8-ab22-b7c65f16bf2d",
+          "name": "Add entries in bulk",
+          "request": {
+            "name": "Add entries in bulk",
+            "description": {
+              "content": "Up to 5,000 entries per request. `ticket_id` is optional — omit it and\nthe server generates a Crockford-Base32 ticket. Supplied tickets must\nmatch `[A-Za-z0-9_\\-\\.]+` and be unique within the draw.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "draws",
+                ":id",
+                "entries"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "26d17998-8794-437a-9dcb-a684557dbda3",
+              "name": "Entries added.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "entries"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"added\": 7893,\n    \"entry_count\": 5490,\n    \"tickets\": [\n      \"string\",\n      \"string\"\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2e889436-b512-4da8-9d70-354f7b71a097",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "entries"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "326fcf82-b141-488e-a280-2fe7acc77fb3",
+              "name": "Draw not found or not yours (`not_found`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "entries"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "238b9717-c4ac-4c45-acb3-212f00844229",
+              "name": "Operation not valid in the draw's current state (`state_conflict`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "entries"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "bba45a4e-05b6-49a6-9db4-6e6385ed9227",
+              "name": "Invalid payload (`validation_failed` / `entry_limit_exceeded`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "entries"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entries\": [\n    {\n      \"ticket_id\": \"<string>\",\n      \"metadata\": \"<object>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "32b8dc63-4059-4fcc-82df-a65ab2494be4",
+          "name": "Seal the draw",
+          "request": {
+            "name": "Seal the draw",
+            "description": {
+              "content": "Freezes the entry list: picks a future drand round, renders the\ncanonical v2 list file (the round is in the header, so one SHA-256\nbinds list **and** round), pushes it to the public\n`proofdraw/draw-lists` git mirror, and submits the hash to an\nOpenTimestamps calendar. The commit must land at least 10 s before the\nround publishes or the seal aborts. With `wait: true`, holds the\nconnection until the round arrives and returns the resolved draw\n(bounded by the server's wait cap, default 60 s).\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "draws",
+                ":id",
+                "seal"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "c0439569-d399-4df5-92b8-4f8d474eaf92",
+              "name": "Draw sealed (resolved when `wait` was true and the round arrived in time).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "seal"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"draw\": {\n      \"id\": \"K7M2\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"state\": \"cancelled\",\n      \"direction\": \"winner\",\n      \"winner_count\": 4972,\n      \"entry_count\": 6355,\n      \"drand_chain\": \"classic\",\n      \"drand_round\": 8178,\n      \"drand_round_time\": \"2004-09-17T17:50:34.296Z\",\n      \"list_hash\": \"string\",\n      \"list_url\": \"string\",\n      \"verify_url\": \"string\",\n      \"winner_row\": 1892,\n      \"winner_ticket\": \"string\",\n      \"callback_url\": \"string\",\n      \"callback_secret\": \"string\",\n      \"public_commit_url\": \"string\",\n      \"sealed_at\": \"1976-04-20T08:50:23.165Z\",\n      \"resolved_at\": \"1996-07-12T01:55:20.649Z\",\n      \"created_at\": \"1950-04-15T14:30:50.225Z\",\n      \"ots_proof_url\": \"string\",\n      \"ots_calendar_url\": \"string\",\n      \"ots_attested_at\": \"1946-12-25T02:52:33.736Z\",\n      \"commitment_text\": \"string\",\n      \"tweet_intent_url\": \"string\",\n      \"tickets\": [\n        \"string\",\n        \"string\"\n      ]\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "649bc318-1531-4d6c-8852-ff9d2d4f2e96",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "seal"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e12e6312-85fb-4f40-bdb0-2b832e216fce",
+              "name": "Draw not found or not yours (`not_found`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "seal"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "dbf1b9b2-dd87-47d2-bd91-a186e530d2aa",
+              "name": "Operation not valid in the draw's current state (`state_conflict`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "seal"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"round_offset_seconds\": 30,\n  \"wait\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ec971255-b3ea-4175-948d-53f11cf44a82",
+          "name": "Resolve a sealed draw now",
+          "request": {
+            "name": "Resolve a sealed draw now",
+            "description": {
+              "content": "Fetches the committed drand round and computes\n`winner_row = drand_value mod N`. Draws also auto-resolve within ~60 s\nof the round time; use this endpoint when you need the result the\nmoment it is available. Idempotent on already-resolved draws.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "draws",
+                ":id",
+                "resolve"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "47e9f4b8-1f0e-45b6-94d0-f313c8ab1983",
+              "name": "Resolved draw.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "resolve"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"\",\n  \"data\": {\n    \"draw\": {\n      \"id\": \"K7M2\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"state\": \"resolved\",\n      \"direction\": \"winner\",\n      \"winner_count\": 5898,\n      \"entry_count\": 626,\n      \"drand_chain\": \"classic\",\n      \"drand_round\": 610,\n      \"drand_round_time\": \"2010-11-18T19:24:05.213Z\",\n      \"list_hash\": \"string\",\n      \"list_url\": \"string\",\n      \"verify_url\": \"string\",\n      \"winner_row\": 9155,\n      \"winner_ticket\": \"string\",\n      \"callback_url\": \"string\",\n      \"callback_secret\": \"string\",\n      \"public_commit_url\": \"string\",\n      \"sealed_at\": \"2022-01-30T01:51:27.167Z\",\n      \"resolved_at\": \"2015-11-04T10:16:07.722Z\",\n      \"created_at\": \"2025-04-07T15:33:30.505Z\",\n      \"ots_proof_url\": \"string\",\n      \"ots_calendar_url\": \"string\",\n      \"ots_attested_at\": \"1994-01-09T03:53:45.870Z\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f56a587f-c048-4505-a532-69853888abb4",
+              "name": "Missing or invalid API key (`unauthenticated`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "resolve"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f725d1af-254a-4493-a106-ad6fc4c27455",
+              "name": "Draw not found or not yours (`not_found`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "resolve"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "389cd803-9256-47ba-9b5e-50f3424b1fa6",
+              "name": "Not sealed (`state_conflict`), or the drand round has not been published yet (`not_yet_available`).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "resolve"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "133ad871-b968-483e-b77a-fc471b2dc560",
+              "name": "drand API unreachable (`drand_unavailable`) — transient, retry.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "draws",
+                    ":id",
+                    "resolve"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Draw public id — 4 uppercase Crockford-Base32 characters."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {},\n  \"message\": \"string\",\n  \"code\": \"drand_unavailable\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "39e7d472-2e0c-4c87-98ab-216764918010",
+      "name": "Verification",
+      "description": {
+        "content": "Public, unauthenticated artifacts used to verify a draw.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "a8e8630c-be41-47d8-9cc7-1775b0973003",
+          "name": "Download a sealed entry list",
+          "request": {
+            "name": "Download a sealed entry list",
+            "description": {
+              "content": "The exact bytes the published SHA-256 commits to (plain text, UTF-8,\nLF; `# `-prefixed header lines carry draw id, chain, round, round time\nand entry count, then one ticket per line). Re-hash the bytes to\nverify. Also mirrored at `github.com/proofdraw/draw-lists`.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "list",
+                ":hash"
+              ],
+              "host": [
+                "{{list-hash-Url}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "hash",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "4393d40f-7828-4583-8b63-4449aa3daa21",
+              "name": "Sealed list bytes.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "list",
+                    ":hash"
+                  ],
+                  "host": [
+                    "{{list-hash-Url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "hash",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/plain"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "string",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "0b32346a-960b-41af-ac90-437200a38f70",
+              "name": "Unknown hash.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "list",
+                    ":hash"
+                  ],
+                  "host": [
+                    "{{list-hash-Url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "hash",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "2687452b-0dfc-465e-90ae-45c0563e06a9",
+          "name": "Download the OpenTimestamps proof for a sealed list",
+          "request": {
+            "name": "Download the OpenTimestamps proof for a sealed list",
+            "description": {
+              "content": "Verify with `ots verify` against the list file. Calendar attestations upgrade to Bitcoin block anchors within ~24 h of sealing.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "list",
+                ":hash",
+                "ots"
+              ],
+              "host": [
+                "{{list-hash-ots-Url}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "hash",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/octet-stream"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "20545e85-000e-4379-9d46-8597b19b20f1",
+              "name": "Binary `.ots` proof.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "list",
+                    ":hash",
+                    "ots"
+                  ],
+                  "host": [
+                    "{{list-hash-ots-Url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "hash",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/octet-stream"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/octet-stream"
+                }
+              ],
+              "body": "string",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "0623b158-9e5c-44b6-80b4-bb6b940c6c66",
+              "name": "No OTS proof for this hash.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "list",
+                    ":hash",
+                    "ots"
+                  ],
+                  "host": [
+                    "{{list-hash-ots-Url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "hash",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://proofdraw.com/api",
+      "key": "baseUrl"
+    },
+    {
+      "type": "string",
+      "value": "https://proofdraw.com",
+      "key": "list-hash-Url"
+    },
+    {
+      "type": "string",
+      "value": "https://proofdraw.com",
+      "key": "list-hash-ots-Url"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "5eec383d-90f4-43e8-b119-dc90ea79d872",
+    "name": "ProofDraw API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Provably fair winner/loser selection. Every draw is sealed with SHA-256,\ndecided by the drand public randomness beacon, and independently verifiable\nby anyone — in the browser, from public sources alone.\n\n**Flow**: create a draw → add entries → seal (the entry list + a *future*\ndrand round are hashed together and committed publicly) → when the round\narrives, `winner_row = drand_value mod N`. Or do it all in one call with\n`POST /v1/draws/instant`.\n\n**Envelope**: every response is `{ \"success\": bool, \"data\": …, \"message\": string }`.\nErrors add a machine-readable `code`.\n\n**Rate limits**: per API key. `X-RateLimit-Limit` and `X-RateLimit-Remaining`\nheaders are returned on every response.\n\n\nContact Support:\n Name: ProofDraw\n Email: hello@proofdraw.com",
+      "type": "text/plain"
+    }
+  }
+}

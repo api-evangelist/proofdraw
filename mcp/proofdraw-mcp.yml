@@ -3,80 +3,82 @@ method: derived
 status: candidate
 source: openapi/proofdraw-api-openapi.yml
 searched:
-  - target: https://proofdraw.com/mcp
-    status: 404
-  - target: https://proofdraw.com/.well-known/ai-plugin.json
-    status: 404
-  - target: https://proofdraw.com/llms.txt
-    status: 404
-  - target: npm registry (proofdraw, @proofdraw/sdk)
-    status: 404
-  - target: github.com/proofdraw (2 public repos — verifier, draw-lists)
-    status: 200
-    note: Neither repo is an MCP server.
-note: >-
-  ProofDraw operates NO MCP server, hosted or local, and publishes no agent-facing packaging of any kind.
-  The tools below are a CANDIDATE surface derived from the published OpenAPI operations — a design
-  proposal, not a provider claim. No `MCPServer` pointer is emitted in apis.yml, because there is no
-  server to point at. Because the spec declares no operationIds, each candidate tool is bound to its
-  method+path instead; that is a real defect in the contract, not an omission here.
+- target: https://proofdraw.com/mcp
+  status: 404
+- target: https://proofdraw.com/.well-known/ai-plugin.json
+  status: 404
+- target: https://proofdraw.com/llms.txt
+  status: 404
+- target: npm registry (proofdraw, @proofdraw/sdk)
+  status: 404
+- target: github.com/proofdraw (2 public repos — verifier, draw-lists)
+  status: 200
+  note: Neither repo is an MCP server.
+note: ProofDraw operates NO MCP server, hosted or local, and publishes no agent-facing packaging of any
+  kind. The tools below are a CANDIDATE surface derived from the published OpenAPI operations — a design
+  proposal, not a provider claim. No `MCPServer` pointer is emitted in apis.yml, because there is no server
+  to point at. Because the spec declares no operationIds, each candidate tool is bound to its method+path
+  instead; that is a real defect in the contract, not an omission here.
 server:
   name: null
   transport: null
   url: null
 tools:
-  - name: create_instant_draw
-    description: >-
-      Create a draw, attach entries, and seal it in one atomic call — optionally waiting for the drand
-      round and returning the resolved winner.
-    source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws/instant
-    consequence: >-
-      Irreversible once sealed. Consumes a unit of the account's draw quota (lifetime-capped at 5 on the
-      free tier) and publishes the entry list to a public GitHub mirror. No idempotency key exists, so a
-      retried call creates a SECOND public draw.
-  - name: create_draw
-    description: Create an open draw without entries.
-    source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws
-  - name: add_draw_entries
-    description: Add up to 5,000 entries to an open draw, atomically per call.
-    source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws/{id}/entries
-  - name: seal_draw
-    description: >-
-      Freeze the draw, hash the canonical list with the chosen future drand round, push it to the public
-      mirror, and submit the hash for OpenTimestamps attestation.
-    source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws/{id}/seal
-    consequence: Irreversible. The public commitment cannot be deleted afterwards.
-  - name: resolve_draw
-    description: Force resolution of a sealed draw once its drand round has published.
-    source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws/{id}/resolve
-    idempotent: true
-  - name: get_draw
-    description: Fetch one draw in its current state.
-    source_operation: openapi/proofdraw-api-openapi.yml#GET /v1/draws/{id}
-  - name: list_draws
-    description: List the caller's 100 most recent draws (silently truncated beyond that).
-    source_operation: openapi/proofdraw-api-openapi.yml#GET /v1/draws
-  - name: cancel_draw
-    description: Cancel and soft-delete an OPEN draw. Returns 409 once sealed.
-    source_operation: openapi/proofdraw-api-openapi.yml#DELETE /v1/draws/{id}
-  - name: get_account
-    description: Read the account, current-period usage, and tier limits — the quota preflight.
-    source_operation: openapi/proofdraw-api-openapi.yml#GET /v1/me
-  - name: get_sealed_list
-    description: Download the raw content-addressed sealed entry list for a hash. Public, no auth.
-    source_operation: openapi/proofdraw-api-openapi.yml#GET /list/{hash}
-  - name: get_ots_proof
-    description: Download the OpenTimestamps proof for a sealed list hash. Public, no auth.
-    source_operation: openapi/proofdraw-api-openapi.yml#GET /list/{hash}/ots
-  - name: health
-    description: Liveness probe. Public, no auth.
-    source_operation: openapi/proofdraw-api-openapi.yml#GET /health
+- name: create_instant_draw
+  description: Create a draw, attach entries, and seal it in one atomic call — optionally waiting for
+    the drand round and returning the resolved winner.
+  source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws/instant
+  consequence: Irreversible once sealed. Consumes a unit of the account's draw quota (lifetime-capped
+    at 5 on the free tier) and publishes the entry list to a public GitHub mirror. No idempotency key
+    exists, so a retried call creates a SECOND public draw.
+- name: create_draw
+  description: Create an open draw without entries.
+  source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws
+- name: add_draw_entries
+  description: Add up to 5,000 entries to an open draw, atomically per call.
+  source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws/{id}/entries
+- name: seal_draw
+  description: Freeze the draw, hash the canonical list with the chosen future drand round, push it to
+    the public mirror, and submit the hash for OpenTimestamps attestation.
+  source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws/{id}/seal
+  consequence: Irreversible. The public commitment cannot be deleted afterwards.
+- name: resolve_draw
+  description: Force resolution of a sealed draw once its drand round has published.
+  source_operation: openapi/proofdraw-api-openapi.yml#POST /v1/draws/{id}/resolve
+  idempotent: true
+- name: get_draw
+  description: Fetch one draw in its current state.
+  source_operation: openapi/proofdraw-api-openapi.yml#GET /v1/draws/{id}
+- name: list_draws
+  description: List the caller's 100 most recent draws (silently truncated beyond that).
+  source_operation: openapi/proofdraw-api-openapi.yml#GET /v1/draws
+- name: cancel_draw
+  description: Cancel and soft-delete an OPEN draw. Returns 409 once sealed.
+  source_operation: openapi/proofdraw-api-openapi.yml#DELETE /v1/draws/{id}
+- name: get_account
+  description: Read the account, current-period usage, and tier limits — the quota preflight.
+  source_operation: openapi/proofdraw-api-openapi.yml#GET /v1/me
+- name: get_sealed_list
+  description: Download the raw content-addressed sealed entry list for a hash. Public, no auth.
+  source_operation: openapi/proofdraw-api-openapi.yml#GET /list/{hash}
+- name: get_ots_proof
+  description: Download the OpenTimestamps proof for a sealed list hash. Public, no auth.
+  source_operation: openapi/proofdraw-api-openapi.yml#GET /list/{hash}/ots
+- name: health
+  description: Liveness probe. Public, no auth.
+  source_operation: openapi/proofdraw-api-openapi.yml#GET /health
 excluded_from_candidate_surface:
-  - operation: POST /v1/auth/register
-    reason: Account creation with server-side Terms consent — not an agent action.
-  - operation: POST /v1/auth/login
-    reason: Mints a new credential on every call; credential issuance should not be a tool.
-  - operation: PATCH /v1/me
-    reason: Changes account email/password.
-  - operation: PUT /v1/me/profile
-    reason: Replaces the business profile wholesale.
+- operation: POST /v1/auth/register
+  reason: Account creation with server-side Terms consent — not an agent action.
+- operation: POST /v1/auth/login
+  reason: Mints a new credential on every call; credential issuance should not be a tool.
+- operation: PATCH /v1/me
+  reason: Changes account email/password.
+- operation: PUT /v1/me/profile
+  reason: Replaces the business profile wholesale.
+deployment:
+  mode: none
+  verified: derived
+  tools: 12
+  checked: '2026-08-12'
+  source: catalog MCP census

@@ -1,0 +1,318 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "ProofDraw API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "System",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Health check",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://proofdraw.com/api/health"
+          },
+          "docs": "Health check"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Auth",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Exchange email + password for a fresh API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://proofdraw.com/api/v1/auth/login",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Each call issues a **new** key; existing keys keep working. The raw key\nis returned only in this response. Sandbox-tier users receive\n`pd_test_*` keys; all other tiers receive `pd_live_*`.\n"
+        },
+        {
+          "info": {
+            "name": "Create a free-tier account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://proofdraw.com/api/v1/auth/register",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a `free`-tier user (5 draws total lifetime, 100 entries per\ndraw, 60 requests/min) and returns a `pd_live_*` API key.\n`terms_accepted_at` must be at or after the current terms effective\ndate — send the moment of acceptance as an ISO-8601 timestamp.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Current account, usage, and limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://proofdraw.com/api/v1/me"
+          },
+          "docs": "Current account, usage, and limits"
+        },
+        {
+          "info": {
+            "name": "Update name, email, or password",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://proofdraw.com/api/v1/me",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Changing the password requires `current_password`."
+        },
+        {
+          "info": {
+            "name": "Create or replace the account's business profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://proofdraw.com/api/v1/me/profile",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create or replace the account's business profile"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Draws",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List your draws",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://proofdraw.com/api/v1/draws"
+          },
+          "docs": "Returns up to 100 most recent draws, newest first."
+        },
+        {
+          "info": {
+            "name": "Create a draw",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://proofdraw.com/api/v1/draws",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a draw in state `open`. If `callback_url` is set, the response\nincludes `callback_secret` (HMAC key for webhook signatures) — this is\nthe **only** time it is returned.\n"
+        },
+        {
+          "info": {
+            "name": "Create, add entries, and seal in one call",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://proofdraw.com/api/v1/draws/instant",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "The recommended endpoint when you already have the full entrant list.\nWith `wait: true`, blocks until the drand round arrives (~32–35 s with\nquicknet defaults) and returns the **resolved** draw with the winner.\nIf create + entries succeed but the seal step fails, the open draw and\ntickets are returned with HTTP 500 / `code: seal_failed` — retry via\n`POST /v1/draws/{id}/seal`.\n"
+        },
+        {
+          "info": {
+            "name": "Fetch a draw",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://proofdraw.com/api/v1/draws/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Draw public id — 4 uppercase Crockford-Base32 characters."
+              }
+            ]
+          },
+          "docs": "Fetch a draw"
+        },
+        {
+          "info": {
+            "name": "Cancel an open draw",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://proofdraw.com/api/v1/draws/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Draw public id — 4 uppercase Crockford-Base32 characters."
+              }
+            ]
+          },
+          "docs": "Only draws in state `open` can be cancelled. Sealed draws are public commitments and cannot be erased."
+        },
+        {
+          "info": {
+            "name": "Add entries in bulk",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://proofdraw.com/api/v1/draws/:id/entries",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Draw public id — 4 uppercase Crockford-Base32 characters."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Up to 5,000 entries per request. `ticket_id` is optional — omit it and\nthe server generates a Crockford-Base32 ticket. Supplied tickets must\nmatch `[A-Za-z0-9_\\-\\.]+` and be unique within the draw.\n"
+        },
+        {
+          "info": {
+            "name": "Seal the draw",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://proofdraw.com/api/v1/draws/:id/seal",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Draw public id — 4 uppercase Crockford-Base32 characters."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Freezes the entry list: picks a future drand round, renders the\ncanonical v2 list file (the round is in the header, so one SHA-256\nbinds list **and** round), pushes it to the public\n`proofdraw/draw-lists` git mirror, and submits the hash to an\nOpenTimestamps calendar. The commit must land at least 10 s before the\nround publishes or the seal aborts. With `wait: true`, holds the\nconnection until the round arrives and returns the resolved draw\n(bounded by the server's wait cap, default 60 s).\n"
+        },
+        {
+          "info": {
+            "name": "Resolve a sealed draw now",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://proofdraw.com/api/v1/draws/:id/resolve",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Draw public id — 4 uppercase Crockford-Base32 characters."
+              }
+            ]
+          },
+          "docs": "Fetches the committed drand round and computes\n`winner_row = drand_value mod N`. Draws also auto-resolve within ~60 s\nof the round time; use this endpoint when you need the result the\nmoment it is available. Idempotent on already-resolved draws.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Verification",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Download a sealed entry list",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://proofdraw.com/api/list/:hash",
+            "params": [
+              {
+                "name": "hash",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "The exact bytes the published SHA-256 commits to (plain text, UTF-8,\nLF; `# `-prefixed header lines carry draw id, chain, round, round time\nand entry count, then one ticket per line). Re-hash the bytes to\nverify. Also mirrored at `github.com/proofdraw/draw-lists`.\n"
+        },
+        {
+          "info": {
+            "name": "Download the OpenTimestamps proof for a sealed list",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://proofdraw.com/api/list/:hash/ots",
+            "params": [
+              {
+                "name": "hash",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Verify with `ots verify` against the list file. Calendar attestations upgrade to Bitcoin block anchors within ~24 h of sealing."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
