@@ -40,55 +40,76 @@ tags_raw:
   - webhooks
   - rest-api
 apis:
-  - name: ProofDraw API
-    description: >-
-      Provably-fair random selection REST API (v1) covering draw lifecycle, account, health, and public
-      verification artifacts. HMAC-signed webhooks. Bearer API-key auth.
-    humanURL: https://proofdraw.com/api
-    baseURL: https://proofdraw.com/api/v1
-    image: https://proofdraw.com/og.png
-    version: v1
-    tags:
-      - Randomness
-      - Provably Fair
-      - drand
-      - verifiable-randomness
-      - Cryptography
-      - raffle
-      - giveaway
-      - Sweepstakes
-      - Lottery
-      - Verification
-      - Webhook
-      - REST API
-    tags_raw:
-      - randomness
-      - provably-fair
-      - drand
-      - verifiable-randomness
-      - cryptography
-      - raffle
-      - giveaway
-      - sweepstakes
-      - lottery
-      - verification
-      - webhooks
-      - rest-api
-    properties:
-      - type: OpenAPI
-        url: openapi/proofdraw-api-openapi.yml
-      - type: OpenAPI
-        url: https://proofdraw.com/openapi.json
-      - type: Overlay
-        url: overlays/proofdraw-api-overlay.yaml
-      - type: Documentation
-        url: https://proofdraw.com/api
-      - type: APIReference
-        url: https://proofdraw.com/api
-    contact:
-      - FN: ProofDraw
-        email: hello@proofdraw.com
-        X-twitter: proofdraw
+- aid: proofdraw:proofdraw-account-api
+  name: ProofDraw Account API
+  description: The Account API from ProofDraw — 2 operation(s) for account.
+  humanURL: https://proofdraw.com/api
+  baseURL: https://proofdraw.com/api/v1
+  tags:
+  - Account
+  properties:
+  - type: OpenAPI
+    url: openapi/proofdraw-account-api-openapi.yml
+  - type: Documentation
+    url: https://proofdraw.com/api
+  - type: APIReference
+    url: https://proofdraw.com/api
+- aid: proofdraw:proofdraw-auth-api
+  name: ProofDraw Auth API
+  description: The Auth API from ProofDraw — 2 operation(s) for auth.
+  humanURL: https://proofdraw.com/api
+  baseURL: https://proofdraw.com/api/v1
+  tags:
+  - Auth
+  properties:
+  - type: OpenAPI
+    url: openapi/proofdraw-auth-api-openapi.yml
+  - type: Documentation
+    url: https://proofdraw.com/api
+  - type: APIReference
+    url: https://proofdraw.com/api
+- aid: proofdraw:proofdraw-draws-api
+  name: ProofDraw Draws API
+  description: The Draws API from ProofDraw — 6 operation(s) for draws.
+  humanURL: https://proofdraw.com/api
+  baseURL: https://proofdraw.com/api/v1
+  tags:
+  - Draws
+  properties:
+  - type: OpenAPI
+    url: openapi/proofdraw-draws-api-openapi.yml
+  - type: Documentation
+    url: https://proofdraw.com/api
+  - type: APIReference
+    url: https://proofdraw.com/api
+- aid: proofdraw:proofdraw-system-api
+  name: ProofDraw System API
+  description: The System API from ProofDraw — 1 operation(s) for system.
+  humanURL: https://proofdraw.com/api
+  baseURL: https://proofdraw.com/api/v1
+  tags:
+  - System
+  properties:
+  - type: OpenAPI
+    url: openapi/proofdraw-system-api-openapi.yml
+  - type: Documentation
+    url: https://proofdraw.com/api
+  - type: APIReference
+    url: https://proofdraw.com/api
+- aid: proofdraw:proofdraw-verification-api
+  name: ProofDraw Verification API
+  description: Public, unauthenticated artifacts used to verify a draw.
+  humanURL: https://proofdraw.com/api
+  baseURL: https://proofdraw.com/api/v1
+  tags:
+  - Verification
+  properties:
+  - type: OpenAPI
+    url: openapi/proofdraw-verification-api-openapi.yml
+  - type: Documentation
+    url: https://proofdraw.com/api
+  - type: APIReference
+    url: https://proofdraw.com/api
 maintainers:
   - FN: ProofDraw
     email: hello@proofdraw.com
@@ -112,6 +133,8 @@ x-coverage:
     every /.well-known/ path, /llms.txt and /mcp return 404.
   checked: '2026-08-11'
 common:
+- type: Overlay
+  url: overlays/proofdraw-api-overlay.yaml
 - type: Website
   url: https://proofdraw.com/
 - type: DeveloperPortal
