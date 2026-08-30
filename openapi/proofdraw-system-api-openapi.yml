@@ -1,0 +1,72 @@
+openapi: 3.2.0
+info:
+  title: ProofDraw System API
+  version: 1.0.0
+  description: 'Provably fair winner/loser selection. Every draw is sealed with SHA-256,
+
+    decided by the drand public randomness beacon, and independently verifiable
+
+    by anyone — in the browser, from public sources alone.
+
+
+    **Flow**: create a draw → add entries → seal (the entry list + a *future*
+
+    drand round are hashed together and committed publicly) → when the round
+
+    arrives, `winner_row = drand_value mod N`. Or do it all in one call with
+
+    `POST /v1/draws/instant`.
+
+
+    **Envelope**: every response is `{ "success": bool, "data": …, "message": string }`.
+
+    Errors add a machine-readable `code`.
+
+
+    **Rate limits**: per API key. `X-RateLimit-Limit` and `X-RateLimit-Remaining`
+
+    headers are returned on every response.
+
+    '
+  termsOfService: https://proofdraw.com/terms
+  contact:
+    name: ProofDraw
+    email: hello@proofdraw.com
+    url: https://proofdraw.com/contact
+servers:
+- url: https://proofdraw.com/api
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: System
+paths:
+  /health:
+    get:
+      tags:
+      - System
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: Service is up.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  time:
+                    type: string
+                    format: date-time
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'API key: `Authorization: Bearer pd_live_…` (or `pd_test_…` for sandbox keys).'
+externalDocs:
+  description: Human-readable API documentation
+  url: https://proofdraw.com/api

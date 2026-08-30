@@ -1,0 +1,319 @@
+openapi: 3.2.0
+info:
+  title: ProofDraw Account API
+  version: 1.0.0
+  description: 'Provably fair winner/loser selection. Every draw is sealed with SHA-256,
+
+    decided by the drand public randomness beacon, and independently verifiable
+
+    by anyone — in the browser, from public sources alone.
+
+
+    **Flow**: create a draw → add entries → seal (the entry list + a *future*
+
+    drand round are hashed together and committed publicly) → when the round
+
+    arrives, `winner_row = drand_value mod N`. Or do it all in one call with
+
+    `POST /v1/draws/instant`.
+
+
+    **Envelope**: every response is `{ "success": bool, "data": …, "message": string }`.
+
+    Errors add a machine-readable `code`.
+
+
+    **Rate limits**: per API key. `X-RateLimit-Limit` and `X-RateLimit-Remaining`
+
+    headers are returned on every response.
+
+    '
+  termsOfService: https://proofdraw.com/terms
+  contact:
+    name: ProofDraw
+    email: hello@proofdraw.com
+    url: https://proofdraw.com/contact
+servers:
+- url: https://proofdraw.com/api
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Account
+paths:
+  /v1/me:
+    get:
+      tags:
+      - Account
+      summary: Current account, usage, and limits
+      responses:
+        '200':
+          description: Account info.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Envelope'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '#/components/schemas/User'
+                        profile:
+                          allOf:
+                          - $ref: '#/components/schemas/Profile'
+                        usage:
+                          $ref: '#/components/schemas/Usage'
+                        limits:
+                          $ref: '#/components/schemas/Limits'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+    patch:
+      tags:
+      - Account
+      summary: Update name, email, or password
+      description: Changing the password requires `current_password`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                  maxLength: 160
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  maxLength: 200
+                current_password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Account updated.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Envelope'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '#/components/schemas/User'
+                        profile:
+                          allOf:
+                          - $ref: '#/components/schemas/Profile'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+  /v1/me/profile:
+    put:
+      tags:
+      - Account
+      summary: Create or replace the account's business profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        '200':
+          description: Profile saved.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Envelope'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        profile:
+                          $ref: '#/components/schemas/Profile'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+components:
+  schemas:
+    Limits:
+      type: object
+      properties:
+        entries_per_draw:
+          type:
+          - integer
+          - 'null'
+        rate_per_minute:
+          type:
+          - integer
+          - 'null'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        tier:
+          type: string
+          enum:
+          - free
+          - starter
+          - pro
+          - enterprise
+          - sandbox
+    Usage:
+      type: object
+      properties:
+        period:
+          type: string
+          enum:
+          - lifetime
+          - month
+          description: Whether the draw limit resets monthly or is a lifetime cap (free tier).
+        period_start:
+          type: string
+          format: date-time
+        draws_this_period:
+          type: integer
+        draws_limit:
+          type:
+          - integer
+          - 'null'
+          description: null = unlimited.
+    Profile:
+      type: object
+      properties:
+        company_name:
+          type:
+          - string
+          - 'null'
+          maxLength: 160
+        website:
+          type:
+          - string
+          - 'null'
+          maxLength: 255
+        description:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+        contact_name:
+          type:
+          - string
+          - 'null'
+          maxLength: 120
+        contact_email:
+          type:
+          - string
+          - 'null'
+          maxLength: 160
+        contact_phone:
+          type:
+          - string
+          - 'null'
+          maxLength: 40
+        address_line1:
+          type:
+          - string
+          - 'null'
+          maxLength: 200
+        address_line2:
+          type:
+          - string
+          - 'null'
+          maxLength: 200
+        city:
+          type:
+          - string
+          - 'null'
+          maxLength: 120
+        region:
+          type:
+          - string
+          - 'null'
+          maxLength: 120
+        postal_code:
+          type:
+          - string
+          - 'null'
+          maxLength: 20
+        country:
+          type:
+          - string
+          - 'null'
+          minLength: 2
+          maxLength: 2
+          description: ISO 3166-1 alpha-2
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data: {}
+        message:
+          type: string
+        code:
+          type: string
+          enum:
+          - validation_failed
+          - unauthenticated
+          - tier_limit_exceeded
+          - not_found
+          - state_conflict
+          - not_yet_available
+          - entry_limit_exceeded
+          - rate_limited
+          - seal_failed
+          - internal_error
+          - drand_unavailable
+    Envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ''
+  responses:
+    ValidationFailed:
+      description: Invalid payload (`validation_failed` / `entry_limit_exceeded`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthenticated:
+      description: Missing or invalid API key (`unauthenticated`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'API key: `Authorization: Bearer pd_live_…` (or `pd_test_…` for sandbox keys).'
+externalDocs:
+  description: Human-readable API documentation
+  url: https://proofdraw.com/api

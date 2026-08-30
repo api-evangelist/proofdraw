@@ -1,0 +1,222 @@
+openapi: 3.2.0
+info:
+  title: ProofDraw Auth API
+  version: 1.0.0
+  description: 'Provably fair winner/loser selection. Every draw is sealed with SHA-256,
+
+    decided by the drand public randomness beacon, and independently verifiable
+
+    by anyone — in the browser, from public sources alone.
+
+
+    **Flow**: create a draw → add entries → seal (the entry list + a *future*
+
+    drand round are hashed together and committed publicly) → when the round
+
+    arrives, `winner_row = drand_value mod N`. Or do it all in one call with
+
+    `POST /v1/draws/instant`.
+
+
+    **Envelope**: every response is `{ "success": bool, "data": …, "message": string }`.
+
+    Errors add a machine-readable `code`.
+
+
+    **Rate limits**: per API key. `X-RateLimit-Limit` and `X-RateLimit-Remaining`
+
+    headers are returned on every response.
+
+    '
+  termsOfService: https://proofdraw.com/terms
+  contact:
+    name: ProofDraw
+    email: hello@proofdraw.com
+    url: https://proofdraw.com/contact
+servers:
+- url: https://proofdraw.com/api
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Auth
+paths:
+  /v1/auth/login:
+    post:
+      tags:
+      - Auth
+      summary: Exchange email + password for a fresh API key
+      description: 'Each call issues a **new** key; existing keys keep working. The raw key
+
+        is returned only in this response. Sandbox-tier users receive
+
+        `pd_test_*` keys; all other tiers receive `pd_live_*`.
+
+        '
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Key issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthKeyResponse'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+  /v1/auth/register:
+    post:
+      tags:
+      - Auth
+      summary: Create a free-tier account
+      description: 'Creates a `free`-tier user (5 draws total lifetime, 100 entries per
+
+        draw, 60 requests/min) and returns a `pd_live_*` API key.
+
+        `terms_accepted_at` must be at or after the current terms effective
+
+        date — send the moment of acceptance as an ISO-8601 timestamp.
+
+        '
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - email
+              - password
+              - terms_accepted_at
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  maxLength: 255
+                terms_accepted_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Account created, key issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthKeyResponse'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        tier:
+          type: string
+          enum:
+          - free
+          - starter
+          - pro
+          - enterprise
+          - sandbox
+    AuthKeyResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              api_key:
+                type: string
+                example: pd_live_8K3Q9R7M2X5V1N4B6C0D2E7F3G8H5J
+              prefix:
+                type: string
+                example: pd_live_8K3Q
+              user:
+                $ref: '#/components/schemas/User'
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data: {}
+        message:
+          type: string
+        code:
+          type: string
+          enum:
+          - validation_failed
+          - unauthenticated
+          - tier_limit_exceeded
+          - not_found
+          - state_conflict
+          - not_yet_available
+          - entry_limit_exceeded
+          - rate_limited
+          - seal_failed
+          - internal_error
+          - drand_unavailable
+    Envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ''
+  responses:
+    ValidationFailed:
+      description: Invalid payload (`validation_failed` / `entry_limit_exceeded`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthenticated:
+      description: Missing or invalid API key (`unauthenticated`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'API key: `Authorization: Bearer pd_live_…` (or `pd_test_…` for sandbox keys).'
+externalDocs:
+  description: Human-readable API documentation
+  url: https://proofdraw.com/api

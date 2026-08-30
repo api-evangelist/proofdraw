@@ -1,0 +1,112 @@
+openapi: 3.2.0
+info:
+  title: ProofDraw Verification API
+  version: 1.0.0
+  description: 'Provably fair winner/loser selection. Every draw is sealed with SHA-256,
+
+    decided by the drand public randomness beacon, and independently verifiable
+
+    by anyone — in the browser, from public sources alone.
+
+
+    **Flow**: create a draw → add entries → seal (the entry list + a *future*
+
+    drand round are hashed together and committed publicly) → when the round
+
+    arrives, `winner_row = drand_value mod N`. Or do it all in one call with
+
+    `POST /v1/draws/instant`.
+
+
+    **Envelope**: every response is `{ "success": bool, "data": …, "message": string }`.
+
+    Errors add a machine-readable `code`.
+
+
+    **Rate limits**: per API key. `X-RateLimit-Limit` and `X-RateLimit-Remaining`
+
+    headers are returned on every response.
+
+    '
+  termsOfService: https://proofdraw.com/terms
+  contact:
+    name: ProofDraw
+    email: hello@proofdraw.com
+    url: https://proofdraw.com/contact
+servers:
+- url: https://proofdraw.com/api
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Verification
+  description: Public, unauthenticated artifacts used to verify a draw.
+paths:
+  /list/{hash}:
+    servers:
+    - url: https://proofdraw.com
+    get:
+      tags:
+      - Verification
+      summary: Download a sealed entry list
+      description: 'The exact bytes the published SHA-256 commits to (plain text, UTF-8,
+
+        LF; `# `-prefixed header lines carry draw id, chain, round, round time
+
+        and entry count, then one ticket per line). Re-hash the bytes to
+
+        verify. Also mirrored at `github.com/proofdraw/draw-lists`.
+
+        '
+      security: []
+      parameters:
+      - name: hash
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+      responses:
+        '200':
+          description: Sealed list bytes.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Unknown hash.
+  /list/{hash}/ots:
+    servers:
+    - url: https://proofdraw.com
+    get:
+      tags:
+      - Verification
+      summary: Download the OpenTimestamps proof for a sealed list
+      description: Verify with `ots verify` against the list file. Calendar attestations upgrade to Bitcoin block anchors within ~24 h of sealing.
+      security: []
+      parameters:
+      - name: hash
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+      responses:
+        '200':
+          description: Binary `.ots` proof.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: No OTS proof for this hash.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'API key: `Authorization: Bearer pd_live_…` (or `pd_test_…` for sandbox keys).'
+externalDocs:
+  description: Human-readable API documentation
+  url: https://proofdraw.com/api
