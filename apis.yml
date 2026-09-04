@@ -21,6 +21,23 @@ deliveryModel:
   - repository-unlicensed
   generated: '2026-08-28'
   method: derived
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  probe_state: covered
+  source:
+  - plans
+  - authentication
+  - rate-limits
+  - security
+  - sandbox
+  generated: '2026-09-03'
+  method: derived
 image: https://proofdraw.com/og.png
 url: https://raw.githubusercontent.com/api-evangelist/proofdraw/refs/heads/main/apis.yml
 created: '2026-07-13'
