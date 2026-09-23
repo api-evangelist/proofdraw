@@ -1,0 +1,30 @@
+{
+  "provider": "proofdraw",
+  "sources": [
+    "_original/proofdraw-api-openapi.yml"
+  ],
+  "outputs": [
+    "proofdraw-account-api-openapi.yml",
+    "proofdraw-auth-api-openapi.yml",
+    "proofdraw-draws-api-openapi.yml",
+    "proofdraw-system-api-openapi.yml",
+    "proofdraw-verification-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "1 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "proofdraw-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "_original/proofdraw-openapi.json: archived document superseded by a larger archived document",
+    "proofdraw-account-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "proofdraw-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "proofdraw-draws-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "proofdraw-system-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "proofdraw-verification-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

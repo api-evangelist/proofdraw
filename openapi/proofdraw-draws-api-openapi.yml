@@ -2,32 +2,7 @@ openapi: 3.2.0
 info:
   title: ProofDraw Draws API
   version: 1.0.0
-  description: 'Provably fair winner/loser selection. Every draw is sealed with SHA-256,
-
-    decided by the drand public randomness beacon, and independently verifiable
-
-    by anyone — in the browser, from public sources alone.
-
-
-    **Flow**: create a draw → add entries → seal (the entry list + a *future*
-
-    drand round are hashed together and committed publicly) → when the round
-
-    arrives, `winner_row = drand_value mod N`. Or do it all in one call with
-
-    `POST /v1/draws/instant`.
-
-
-    **Envelope**: every response is `{ "success": bool, "data": …, "message": string }`.
-
-    Errors add a machine-readable `code`.
-
-
-    **Rate limits**: per API key. `X-RateLimit-Limit` and `X-RateLimit-Remaining`
-
-    headers are returned on every response.
-
-    '
+  description: Provably fair winner/loser selection.
   termsOfService: https://proofdraw.com/terms
   contact:
     name: ProofDraw
@@ -66,6 +41,8 @@ paths:
                             $ref: '#/components/schemas/Draw'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+      operationId: getV1Draws
+      x-operation-id-source: derived
     post:
       tags:
       - Draws
@@ -74,9 +51,7 @@ paths:
 
         includes `callback_secret` (HMAC key for webhook signatures) — this is
 
-        the **only** time it is returned.
-
-        '
+        the **only** time it is returned.'
       requestBody:
         required: true
         content:
@@ -96,6 +71,8 @@ paths:
           $ref: '#/components/responses/TierLimit'
         '422':
           $ref: '#/components/responses/ValidationFailed'
+      operationId: postV1Draws
+      x-operation-id-source: derived
   /v1/draws/instant:
     post:
       tags:
@@ -111,9 +88,7 @@ paths:
 
         tickets are returned with HTTP 500 / `code: seal_failed` — retry via
 
-        `POST /v1/draws/{id}/seal`.
-
-        '
+        `POST /v1/draws/{id}/seal`.'
       requestBody:
         required: true
         content:
@@ -160,6 +135,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      operationId: postV1DrawsInstant
+      x-operation-id-source: derived
   /v1/draws/{id}:
     parameters:
     - $ref: '#/components/parameters/DrawId'
@@ -178,6 +155,8 @@ paths:
           $ref: '#/components/responses/Unauthenticated'
         '404':
           $ref: '#/components/responses/NotFound'
+      operationId: getV1DrawsById
+      x-operation-id-source: derived
     delete:
       tags:
       - Draws
@@ -196,6 +175,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/StateConflict'
+      operationId: deleteV1DrawsById
+      x-operation-id-source: derived
   /v1/draws/{id}/entries:
     parameters:
     - $ref: '#/components/parameters/DrawId'
@@ -207,9 +188,7 @@ paths:
 
         the server generates a Crockford-Base32 ticket. Supplied tickets must
 
-        match `[A-Za-z0-9_\-\.]+` and be unique within the draw.
-
-        '
+        match `[A-Za-z0-9_\-\.]+` and be unique within the draw.'
       requestBody:
         required: true
         content:
@@ -254,6 +233,8 @@ paths:
           $ref: '#/components/responses/StateConflict'
         '422':
           $ref: '#/components/responses/ValidationFailed'
+      operationId: postV1DrawsByIdEntries
+      x-operation-id-source: derived
   /v1/draws/{id}/seal:
     parameters:
     - $ref: '#/components/parameters/DrawId'
@@ -275,9 +256,7 @@ paths:
 
         connection until the round arrives and returns the resolved draw
 
-        (bounded by the server''s wait cap, default 60 s).
-
-        '
+        (bounded by the server''s wait cap, default 60 s).'
       requestBody:
         content:
           application/json:
@@ -305,6 +284,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/StateConflict'
+      operationId: postV1DrawsByIdSeal
+      x-operation-id-source: derived
   /v1/draws/{id}/resolve:
     parameters:
     - $ref: '#/components/parameters/DrawId'
@@ -318,9 +299,7 @@ paths:
 
         of the round time; use this endpoint when you need the result the
 
-        moment it is available. Idempotent on already-resolved draws.
-
-        '
+        moment it is available. Idempotent on already-resolved draws.'
       responses:
         '200':
           description: Resolved draw.
@@ -344,8 +323,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      operationId: postV1DrawsByIdResolve
+      x-operation-id-source: derived
 components:
   schemas:
+    EntryInput:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+          maxLength: 64
+          pattern: ^[A-Za-z0-9_\-\.]+$
+          description: Optional — omit to auto-generate. Your own customer ids, order numbers, or email hashes all work.
+        metadata:
+          type:
+          - object
+          - 'null'
+          description: Opaque to ProofDraw; stored as-is.
+    Envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ''
     SealedDrawResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -371,19 +374,82 @@ components:
                       items:
                         type: string
                       description: 'Instant endpoint only: all ticket ids in submission order.'
-    EntryInput:
+    DrawCreate:
       type: object
+      required:
+      - name
       properties:
-        ticket_id:
+        name:
           type: string
-          maxLength: 64
-          pattern: ^[A-Za-z0-9_\-\.]+$
-          description: Optional — omit to auto-generate. Your own customer ids, order numbers, or email hashes all work.
+          maxLength: 120
+        description:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+        direction:
+          type: string
+          enum:
+          - winner
+          - loser
+          default: winner
+        winner_count:
+          type: integer
+          minimum: 1
+          maximum: 1
+          default: 1
+          description: Multi-winner draws are enterprise-only in v1.
+        drand_chain:
+          type: string
+          enum:
+          - quicknet
+          - classic
+          default: quicknet
+        callback_url:
+          type:
+          - string
+          - 'null'
+          maxLength: 500
+          description: Webhook target for draw.sealed / draw.resolved / draw.cancelled events.
         metadata:
           type:
           - object
           - 'null'
-          description: Opaque to ProofDraw; stored as-is.
+          description: Opaque
+          max 4 KB.: null
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data: {}
+        message:
+          type: string
+        code:
+          type: string
+          enum:
+          - validation_failed
+          - unauthenticated
+          - tier_limit_exceeded
+          - not_found
+          - state_conflict
+          - not_yet_available
+          - entry_limit_exceeded
+          - rate_limited
+          - seal_failed
+          - internal_error
+          - drand_unavailable
+    DrawResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              draw:
+                $ref: '#/components/schemas/Draw'
     Draw:
       type: object
       properties:
@@ -489,92 +555,13 @@ components:
           - string
           - 'null'
           format: date-time
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        data: {}
-        message:
-          type: string
-        code:
-          type: string
-          enum:
-          - validation_failed
-          - unauthenticated
-          - tier_limit_exceeded
-          - not_found
-          - state_conflict
-          - not_yet_available
-          - entry_limit_exceeded
-          - rate_limited
-          - seal_failed
-          - internal_error
-          - drand_unavailable
-    DrawCreate:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          maxLength: 120
-        description:
-          type:
-          - string
-          - 'null'
-          maxLength: 2000
-        direction:
-          type: string
-          enum:
-          - winner
-          - loser
-          default: winner
-        winner_count:
-          type: integer
-          minimum: 1
-          maximum: 1
-          default: 1
-          description: Multi-winner draws are enterprise-only in v1.
-        drand_chain:
-          type: string
-          enum:
-          - quicknet
-          - classic
-          default: quicknet
-        callback_url:
-          type:
-          - string
-          - 'null'
-          maxLength: 500
-          description: Webhook target for draw.sealed / draw.resolved / draw.cancelled events.
-        metadata:
-          type:
-          - object
-          - 'null'
-          description: Opaque
-          max 4 KB.: null
-    Envelope:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: ''
-    DrawResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              draw:
-                $ref: '#/components/schemas/Draw'
   responses:
+    ValidationFailed:
+      description: Invalid payload (`validation_failed` / `entry_limit_exceeded`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     StateConflict:
       description: Operation not valid in the draw's current state (`state_conflict`).
       content:
@@ -583,12 +570,6 @@ components:
             $ref: '#/components/schemas/Error'
     NotFound:
       description: Draw not found or not yours (`not_found`).
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ValidationFailed:
-      description: Invalid payload (`validation_failed` / `entry_limit_exceeded`).
       content:
         application/json:
           schema:

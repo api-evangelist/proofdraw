@@ -2,32 +2,7 @@ openapi: 3.2.0
 info:
   title: ProofDraw Account API
   version: 1.0.0
-  description: 'Provably fair winner/loser selection. Every draw is sealed with SHA-256,
-
-    decided by the drand public randomness beacon, and independently verifiable
-
-    by anyone — in the browser, from public sources alone.
-
-
-    **Flow**: create a draw → add entries → seal (the entry list + a *future*
-
-    drand round are hashed together and committed publicly) → when the round
-
-    arrives, `winner_row = drand_value mod N`. Or do it all in one call with
-
-    `POST /v1/draws/instant`.
-
-
-    **Envelope**: every response is `{ "success": bool, "data": …, "message": string }`.
-
-    Errors add a machine-readable `code`.
-
-
-    **Rate limits**: per API key. `X-RateLimit-Limit` and `X-RateLimit-Remaining`
-
-    headers are returned on every response.
-
-    '
+  description: Provably fair winner/loser selection.
   termsOfService: https://proofdraw.com/terms
   contact:
     name: ProofDraw
@@ -70,6 +45,8 @@ paths:
                           $ref: '#/components/schemas/Limits'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+      operationId: getV1Me
+      x-operation-id-source: derived
     patch:
       tags:
       - Account
@@ -119,6 +96,8 @@ paths:
           $ref: '#/components/responses/Unauthenticated'
         '422':
           $ref: '#/components/responses/ValidationFailed'
+      operationId: patchV1Me
+      x-operation-id-source: derived
   /v1/me/profile:
     put:
       tags:
@@ -149,6 +128,8 @@ paths:
           $ref: '#/components/responses/Unauthenticated'
         '422':
           $ref: '#/components/responses/ValidationFailed'
+      operationId: putV1MeProfile
+      x-operation-id-source: derived
 components:
   schemas:
     Limits:
@@ -162,24 +143,6 @@ components:
           type:
           - integer
           - 'null'
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-        email:
-          type: string
-          format: email
-        name:
-          type: string
-        tier:
-          type: string
-          enum:
-          - free
-          - starter
-          - pro
-          - enterprise
-          - sandbox
     Usage:
       type: object
       properties:
@@ -264,6 +227,33 @@ components:
           minLength: 2
           maxLength: 2
           description: ISO 3166-1 alpha-2
+    Envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ''
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        tier:
+          type: string
+          enum:
+          - free
+          - starter
+          - pro
+          - enterprise
+          - sandbox
     Error:
       type: object
       properties:
@@ -287,15 +277,6 @@ components:
           - seal_failed
           - internal_error
           - drand_unavailable
-    Envelope:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: ''
   responses:
     ValidationFailed:
       description: Invalid payload (`validation_failed` / `entry_limit_exceeded`).
