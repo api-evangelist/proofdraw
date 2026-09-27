@@ -132,17 +132,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    Limits:
-      type: object
-      properties:
-        entries_per_draw:
-          type:
-          - integer
-          - 'null'
-        rate_per_minute:
-          type:
-          - integer
-          - 'null'
     Usage:
       type: object
       properties:
@@ -236,6 +225,17 @@ components:
         message:
           type: string
           example: ''
+    Limits:
+      type: object
+      properties:
+        entries_per_draw:
+          type:
+          - integer
+          - 'null'
+        rate_per_minute:
+          type:
+          - integer
+          - 'null'
     User:
       type: object
       properties:

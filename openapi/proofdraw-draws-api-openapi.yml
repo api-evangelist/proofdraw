@@ -327,28 +327,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    EntryInput:
-      type: object
-      properties:
-        ticket_id:
-          type: string
-          maxLength: 64
-          pattern: ^[A-Za-z0-9_\-\.]+$
-          description: Optional — omit to auto-generate. Your own customer ids, order numbers, or email hashes all work.
-        metadata:
-          type:
-          - object
-          - 'null'
-          description: Opaque to ProofDraw; stored as-is.
-    Envelope:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: ''
     SealedDrawResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -374,6 +352,61 @@ components:
                       items:
                         type: string
                       description: 'Instant endpoint only: all ticket ids in submission order.'
+    Envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ''
+    EntryInput:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+          maxLength: 64
+          pattern: ^[A-Za-z0-9_\-\.]+$
+          description: Optional — omit to auto-generate. Your own customer ids, order numbers, or email hashes all work.
+        metadata:
+          type:
+          - object
+          - 'null'
+          description: Opaque to ProofDraw; stored as-is.
+    DrawResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              draw:
+                $ref: '#/components/schemas/Draw'
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data: {}
+        message:
+          type: string
+        code:
+          type: string
+          enum:
+          - validation_failed
+          - unauthenticated
+          - tier_limit_exceeded
+          - not_found
+          - state_conflict
+          - not_yet_available
+          - entry_limit_exceeded
+          - rate_limited
+          - seal_failed
+          - internal_error
+          - drand_unavailable
     DrawCreate:
       type: object
       required:
@@ -417,39 +450,6 @@ components:
           - 'null'
           description: Opaque
           max 4 KB.: null
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        data: {}
-        message:
-          type: string
-        code:
-          type: string
-          enum:
-          - validation_failed
-          - unauthenticated
-          - tier_limit_exceeded
-          - not_found
-          - state_conflict
-          - not_yet_available
-          - entry_limit_exceeded
-          - rate_limited
-          - seal_failed
-          - internal_error
-          - drand_unavailable
-    DrawResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              draw:
-                $ref: '#/components/schemas/Draw'
     Draw:
       type: object
       properties:
@@ -562,12 +562,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    StateConflict:
-      description: Operation not valid in the draw's current state (`state_conflict`).
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     NotFound:
       description: Draw not found or not yours (`not_found`).
       content:
@@ -576,6 +570,12 @@ components:
             $ref: '#/components/schemas/Error'
     TierLimit:
       description: Plan draw cap reached (`tier_limit_exceeded`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    StateConflict:
+      description: Operation not valid in the draw's current state (`state_conflict`).
       content:
         application/json:
           schema:
