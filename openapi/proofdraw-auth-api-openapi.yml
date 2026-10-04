@@ -108,6 +108,24 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        tier:
+          type: string
+          enum:
+          - free
+          - starter
+          - pro
+          - enterprise
+          - sandbox
     AuthKeyResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -124,6 +142,15 @@ components:
                 example: pd_live_8K3Q
               user:
                 $ref: '#/components/schemas/User'
+    Envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ''
     Error:
       type: object
       properties:
@@ -147,33 +174,6 @@ components:
           - seal_failed
           - internal_error
           - drand_unavailable
-    Envelope:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: ''
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-        email:
-          type: string
-          format: email
-        name:
-          type: string
-        tier:
-          type: string
-          enum:
-          - free
-          - starter
-          - pro
-          - enterprise
-          - sandbox
   responses:
     Unauthenticated:
       description: Missing or invalid API key (`unauthenticated`).

@@ -326,17 +326,63 @@ paths:
       operationId: postV1DrawsByIdResolve
       x-operation-id-source: derived
 components:
-  parameters:
-    DrawId:
-      name: id
-      in: path
-      required: true
-      description: Draw public id — 4 uppercase Crockford-Base32 characters.
-      schema:
-        type: string
-        pattern: ^[0-9A-Z]{4}$
-        example: K7M2
   schemas:
+    DrawCreate:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        description:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+        direction:
+          type: string
+          enum:
+          - winner
+          - loser
+          default: winner
+        winner_count:
+          type: integer
+          minimum: 1
+          maximum: 1
+          default: 1
+          description: Multi-winner draws are enterprise-only in v1.
+        drand_chain:
+          type: string
+          enum:
+          - quicknet
+          - classic
+          default: quicknet
+        callback_url:
+          type:
+          - string
+          - 'null'
+          maxLength: 500
+          description: Webhook target for draw.sealed / draw.resolved / draw.cancelled events.
+        metadata:
+          type:
+          - object
+          - 'null'
+          description: Opaque
+          max 4 KB.: null
+    EntryInput:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+          maxLength: 64
+          pattern: ^[A-Za-z0-9_\-\.]+$
+          description: Optional — omit to auto-generate. Your own customer ids, order numbers, or email hashes all work.
+        metadata:
+          type:
+          - object
+          - 'null'
+          description: Opaque to ProofDraw; stored as-is.
     SealedDrawResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -362,29 +408,25 @@ components:
                       items:
                         type: string
                       description: 'Instant endpoint only: all ticket ids in submission order.'
-    Error:
+    Envelope:
       type: object
       properties:
         success:
           type: boolean
-          example: false
-        data: {}
+          example: true
         message:
           type: string
-        code:
-          type: string
-          enum:
-          - validation_failed
-          - unauthenticated
-          - tier_limit_exceeded
-          - not_found
-          - state_conflict
-          - not_yet_available
-          - entry_limit_exceeded
-          - rate_limited
-          - seal_failed
-          - internal_error
-          - drand_unavailable
+          example: ''
+    DrawResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              draw:
+                $ref: '#/components/schemas/Draw'
     Draw:
       type: object
       properties:
@@ -490,84 +532,32 @@ components:
           - string
           - 'null'
           format: date-time
-    DrawResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        properties:
-          data:
-            type: object
-            properties:
-              draw:
-                $ref: '#/components/schemas/Draw'
-    DrawCreate:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          maxLength: 120
-        description:
-          type:
-          - string
-          - 'null'
-          maxLength: 2000
-        direction:
-          type: string
-          enum:
-          - winner
-          - loser
-          default: winner
-        winner_count:
-          type: integer
-          minimum: 1
-          maximum: 1
-          default: 1
-          description: Multi-winner draws are enterprise-only in v1.
-        drand_chain:
-          type: string
-          enum:
-          - quicknet
-          - classic
-          default: quicknet
-        callback_url:
-          type:
-          - string
-          - 'null'
-          maxLength: 500
-          description: Webhook target for draw.sealed / draw.resolved / draw.cancelled events.
-        metadata:
-          type:
-          - object
-          - 'null'
-          description: Opaque
-          max 4 KB.: null
-    Envelope:
+    Error:
       type: object
       properties:
         success:
           type: boolean
-          example: true
+          example: false
+        data: {}
         message:
           type: string
-          example: ''
-    EntryInput:
-      type: object
-      properties:
-        ticket_id:
+        code:
           type: string
-          maxLength: 64
-          pattern: ^[A-Za-z0-9_\-\.]+$
-          description: Optional — omit to auto-generate. Your own customer ids, order numbers, or email hashes all work.
-        metadata:
-          type:
-          - object
-          - 'null'
-          description: Opaque to ProofDraw; stored as-is.
+          enum:
+          - validation_failed
+          - unauthenticated
+          - tier_limit_exceeded
+          - not_found
+          - state_conflict
+          - not_yet_available
+          - entry_limit_exceeded
+          - rate_limited
+          - seal_failed
+          - internal_error
+          - drand_unavailable
   responses:
-    Unauthenticated:
-      description: Missing or invalid API key (`unauthenticated`).
+    StateConflict:
+      description: Operation not valid in the draw's current state (`state_conflict`).
       content:
         application/json:
           schema:
@@ -578,14 +568,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    TierLimit:
-      description: Plan draw cap reached (`tier_limit_exceeded`).
+    Unauthenticated:
+      description: Missing or invalid API key (`unauthenticated`).
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    StateConflict:
-      description: Operation not valid in the draw's current state (`state_conflict`).
+    TierLimit:
+      description: Plan draw cap reached (`tier_limit_exceeded`).
       content:
         application/json:
           schema:
@@ -596,6 +586,16 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+  parameters:
+    DrawId:
+      name: id
+      in: path
+      required: true
+      description: Draw public id — 4 uppercase Crockford-Base32 characters.
+      schema:
+        type: string
+        pattern: ^[0-9A-Z]{4}$
+        example: K7M2
   securitySchemes:
     bearerAuth:
       type: http

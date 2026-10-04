@@ -132,6 +132,44 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        tier:
+          type: string
+          enum:
+          - free
+          - starter
+          - pro
+          - enterprise
+          - sandbox
+    Envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ''
+    Limits:
+      type: object
+      properties:
+        entries_per_draw:
+          type:
+          - integer
+          - 'null'
+        rate_per_minute:
+          type:
+          - integer
+          - 'null'
     Usage:
       type: object
       properties:
@@ -151,67 +189,6 @@ components:
           - integer
           - 'null'
           description: null = unlimited.
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        data: {}
-        message:
-          type: string
-        code:
-          type: string
-          enum:
-          - validation_failed
-          - unauthenticated
-          - tier_limit_exceeded
-          - not_found
-          - state_conflict
-          - not_yet_available
-          - entry_limit_exceeded
-          - rate_limited
-          - seal_failed
-          - internal_error
-          - drand_unavailable
-    Limits:
-      type: object
-      properties:
-        entries_per_draw:
-          type:
-          - integer
-          - 'null'
-        rate_per_minute:
-          type:
-          - integer
-          - 'null'
-    Envelope:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: ''
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-        email:
-          type: string
-          format: email
-        name:
-          type: string
-        tier:
-          type: string
-          enum:
-          - free
-          - starter
-          - pro
-          - enterprise
-          - sandbox
     Profile:
       type: object
       properties:
@@ -277,6 +254,29 @@ components:
           minLength: 2
           maxLength: 2
           description: ISO 3166-1 alpha-2
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data: {}
+        message:
+          type: string
+        code:
+          type: string
+          enum:
+          - validation_failed
+          - unauthenticated
+          - tier_limit_exceeded
+          - not_found
+          - state_conflict
+          - not_yet_available
+          - entry_limit_exceeded
+          - rate_limited
+          - seal_failed
+          - internal_error
+          - drand_unavailable
   responses:
     Unauthenticated:
       description: Missing or invalid API key (`unauthenticated`).
