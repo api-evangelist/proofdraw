@@ -165,6 +165,8 @@ x-coverage:
     every /.well-known/ path, /llms.txt and /mcp return 404.
   checked: '2026-08-11'
 common:
+- type: Pricing
+  url: https://proofdraw.com/api
 - type: License
   name: MIT
   url: https://github.com/proofdraw/verifier/blob/main/LICENSE
