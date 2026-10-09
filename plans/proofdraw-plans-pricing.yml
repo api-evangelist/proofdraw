@@ -60,3 +60,22 @@ evidence:
   - url: https://proofdraw.com/build/assets/Pricing-CNkFcxt9.js
     status: 200
     note: Public JS chunk for the gated pricing page; carries no price values.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - metered
+  units: []
+  plans:
+  - name: Free
+    access: other
+    model: metered
+    model_how: derived
+    units: []
+    periods: []
+  - name: Paid / custom
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
