@@ -108,6 +108,29 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data: {}
+        message:
+          type: string
+        code:
+          type: string
+          enum:
+          - validation_failed
+          - unauthenticated
+          - tier_limit_exceeded
+          - not_found
+          - state_conflict
+          - not_yet_available
+          - entry_limit_exceeded
+          - rate_limited
+          - seal_failed
+          - internal_error
+          - drand_unavailable
     User:
       type: object
       properties:
@@ -151,29 +174,6 @@ components:
         message:
           type: string
           example: ''
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        data: {}
-        message:
-          type: string
-        code:
-          type: string
-          enum:
-          - validation_failed
-          - unauthenticated
-          - tier_limit_exceeded
-          - not_found
-          - state_conflict
-          - not_yet_available
-          - entry_limit_exceeded
-          - rate_limited
-          - seal_failed
-          - internal_error
-          - drand_unavailable
   responses:
     Unauthenticated:
       description: Missing or invalid API key (`unauthenticated`).
