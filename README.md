@@ -1,4 +1,4 @@
-# proofdraw
+# ProofDraw
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,4 +64,134 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Provably-fair random selection REST API that seals entry lists with SHA-256 commitments bound to future drand (League of Entropy) randomness rounds, producing publicly verifiable draw receipts with client-side open-source verification.
+Provably-fair random selection REST API that seals entry lists with SHA-256 commitments bound to future drand (League of Entropy) randomness rounds, producing publicly verifiable draw receipts with client-side open-source verification. A draw is created, entries are added as opaque ticket ids, then sealed against a chosen future beacon round on the quicknet (3s) or classic (30s) chain; the canonical list file is hashed, mirrored to a public GitHub repository, and anchored with OpenTimestamps, so any entrant can re-derive the winner in their own browser from public sources alone. Serves giveaways, raffles and sweepstakes, non-profit draws, audit sample selection and task allocation, with HMAC-signed webhooks and bearer API-key authentication.
+
+**Areas:** Randomness · Provably Fair · Drand · Verifiable Randomness · Cryptography · raffle · Giveaway · Sweepstakes · Lottery · Verification · Webhook · REST API
+
+## ProofDraw on APIs.io
+
+Everything profiled for ProofDraw is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/proofdraw/](https://apis.io/providers/proofdraw/)** — or go straight to one of the APIs or properties below.
+
+### APIs (5)
+
+- [ProofDraw Account API](https://apis.io/apis/proofdraw/proofdraw-account-api/) — The Account API from ProofDraw — 2 operation(s) for account.
+- [ProofDraw Auth API](https://apis.io/apis/proofdraw/proofdraw-auth-api/) — The Auth API from ProofDraw — 2 operation(s) for auth.
+- [ProofDraw Draws API](https://apis.io/apis/proofdraw/proofdraw-draws-api/) — The Draws API from ProofDraw — 6 operation(s) for draws.
+- [ProofDraw System API](https://apis.io/apis/proofdraw/proofdraw-system-api/) — The System API from ProofDraw — 1 operation(s) for system.
+- [ProofDraw Verification API](https://apis.io/apis/proofdraw/proofdraw-verification-api/) — Public, unauthenticated artifacts used to verify a draw.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Proofdraw Webhooks](https://apis.io/asyncapis/proofdraw/proofdraw-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [proofdraw-mcp.yml](https://apis.io/servers/proofdraw/proofdraw-mcp-yml/)
+
+#### Collections (1)
+
+Postman and Open Collection request collections.
+
+- [ProofDraw API](https://apis.io/collections/proofdraw/open-proofdraw-api/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Proofdraw Api Overlay](https://apis.io/overlays/proofdraw/proofdraw-api-overlay/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Proofdraw Authentication](https://apis.io/security/proofdraw/proofdraw-authentication/)
+- [Proofdraw Domain Security](https://apis.io/security/proofdraw/proofdraw-domain-security/)
+- [Proofdraw Vulnerability Disclosure](https://apis.io/security/proofdraw/proofdraw-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Proofdraw Plans Pricing](https://apis.io/plans/proofdraw/proofdraw-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Proofdraw Rate Limits](https://apis.io/rate-limits/proofdraw/proofdraw-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://proofdraw.com/)
+- [Documentation](https://proofdraw.com/api)
+- [API reference](https://proofdraw.com/api)
+- [Pricing](https://proofdraw.com/api)
+- [Sign up](https://proofdraw.com/register)
+- [Support](https://proofdraw.com/contact)
+- [Security](https://proofdraw.com/contact)
+- [Terms of service](https://proofdraw.com/terms)
+- [Privacy policy](https://proofdraw.com/privacy)
+- [GitHub](https://github.com/proofdraw)
+
+## API Evangelist rating
+
+**Kin Score 36.5** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 54.4 |
+| Contract governance | 4.5 |
+| Operational transparency | 10.5 |
+| Developer ergonomics | 20.8 |
+| Access clarity | 38.2 |
+
+**Agent readiness 33.2** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 22.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/proofdraw/](https://apis.io/providers/proofdraw/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for ProofDraw: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/proofdraw/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
