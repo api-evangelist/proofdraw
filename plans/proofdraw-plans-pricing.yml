@@ -61,7 +61,7 @@ evidence:
     status: 200
     note: Public JS chunk for the gated pricing page; carries no price values.
 x-canonical:
-  generated: '2026-11-02'
+  generated: '2026-11-06'
   vocabulary: engine/economics/plans-canonical.yml
   models:
   - metered
